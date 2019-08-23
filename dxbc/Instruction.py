@@ -102,7 +102,9 @@ class MoveCondInstruction(ArithmeticInstruction):
 
 class BitfieldInsert(ArithmeticInstruction):
     def disassemble(self):
-        return "{} = bits 0-{} of {} inserted starting at bit {} in {};".format(self.result_arg, self.calc_args[0], self.calc_args[2], self.calc_args[1], self.calc_args[3])
+        return "{{ uint mask = 0xffffffff >> (32 - {0}); {2} = (({3} << {1}) & mask) | ({4} & ~mask); }}".format(
+            self.calc_args[0], self.calc_args[1], self.result_arg, self.calc_args[2], self.calc_args[3]
+        )
 
 class MADDInstruction(ArithmeticInstruction):
     def disassemble(self):
