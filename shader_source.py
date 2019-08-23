@@ -246,5 +246,3 @@ ps_instruction_str2 = """
   75: mov oMask, l(7)
   76: ret
 """
-
-instruction_str = ps_instruction_str

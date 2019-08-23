@@ -3,11 +3,7 @@ from dxbc.Instruction import *
 from dxbc.InstructionMap import getInstructionType
 from dxbc.tokens import *
 from dxbc.exprs import *
-from shader_source import instruction_str
-
-
-def list_str(list):
-    return ", ".join([str(x) for x in list])
+from utils import *
 
 
 CT = CompoundToken
@@ -18,20 +14,7 @@ arguments_token = OT(CT(ExpressionToken(SwizzleOutputExpr), RepeatingToken(CT(Re
 instruction_token = CT(WhitespaceToken, LineNumberToken, WhitespaceToken,
                        InstructionNameToken, WhitespaceToken, arguments_token, OT(NewlineToken))
 
-print(SwizzleOutputExpr)
-
-# test_token = RepeatingToken(CT(RegexToken(r"\d+"), OT(CT(RegexToken(","), WhitespaceToken))))
-# print(", ".join([str(x) for x in test_token.eat("1,2,3,4,5,")[0]]))
-# print(list_str(test_token.eat("1, 2, 3, 4, 5")[0]))
-# print(list_str(value_expr_token.eat("r0.y")[0]))
-
-from shader_source import instruction_str
-
-#instructions = filter(lambda x: x, [x.lstrip() for x in instruction_str.split("\n")])
-#for instr in instructions:
-#    print(instr)
-#    tokens, remaining = instruction_token.eat(instr)
-#    print("{}, rem: {}".format(list_str(tokens), repr(remaining)))
+from shader_source import ps_instruction_str2 as instruction_str
 
 remaining = instruction_str
 while True:
@@ -42,12 +25,9 @@ while True:
         print(e)
         break
 
-    instr_name, args_exprs = extract_instruction_data(tokens)
-    print(getInstructionType(instr_name)(instr_name, args_exprs).disassemble())
-    #print("instr: {}, args: {}".format(instr_name, list_str(args_exprs)))
-    #if instr_name == "sample_indexable(texture2d)(float,float,float,float)":
-        #print(list_str(tokens))
-    #    print(SampleTexInstruction(instr_name, args_exprs).disassemble())
-    #else:
-    #    print(ArithmeticInstruction(instr_name, args_exprs).disassemble())
-    #print("{} rem {}".format(list_str(tokens), repr(remaining[0:10])))
+    try:
+        instr_name, args_exprs = extract_instruction_data(tokens)
+        instr = getInstructionType(instr_name)(instr_name, args_exprs)
+    except ValueError as e:
+        reraise(e, "{} encountered when disassembling " + list_str(tokens))
+    print(instr.disassemble())

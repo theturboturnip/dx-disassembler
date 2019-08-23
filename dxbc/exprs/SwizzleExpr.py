@@ -26,6 +26,15 @@ class SwizzleExpr(ValueExpr):
         ValueExpr.__init__(self, str_data, swizzle_comps)
         self.var = var
         self.swizzle_comps = swizzle_comps
+        if not swizzle_comps:
+            self.value_mask = [True, False, False, False]  # X only
+        else:
+            self.value_mask = [
+                'x' in swizzle_comps,
+                'y' in swizzle_comps,
+                'z' in swizzle_comps,
+                'w' in swizzle_comps,
+            ]
 
     def __getitem__(self, item):
         if not self.swizzle_comps:
@@ -64,9 +73,12 @@ class SwizzleOutputExpr(Expr):
                 'z' in swizzle_comps,
                 'w' in swizzle_comps,
             ]
+        self.value_mask = self.output_mask
         Expr.__init__(self, str_data)
         self.var = var
         self.swizzle_comps = swizzle_comps
 
     def __str__(self):
-        return "{}.{}".format(self.var, self.swizzle_comps)
+        if self.swizzle_comps:
+            return "{}.{}".format(self.var, self.swizzle_comps)
+        return self.var

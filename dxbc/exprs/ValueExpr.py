@@ -14,6 +14,7 @@ class ValueExpr(Expr):
         if not values:
             raise ValueError("Expected ValueExpr to have values")
         self.values = list(values)
+        self.value_count = len(values)
 
     def __getitem__(self, index):
         raise NotImplementedError()

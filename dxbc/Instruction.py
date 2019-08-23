@@ -53,16 +53,25 @@ class SampleTexInstruction(ResultInstruction):
         self.sampler_arg = self.calc_args[2].mask([False] * len(self.calc_args[2].values)) # Make sure only one argument remains
 
     def disassemble(self):
-        return "{} = {}.sample({}, {}).{};".format(self.result_arg, self.sampler_arg.var, self.texture_arg.var, self.uv_arg, "".join(self.texture_arg.values))
+        return "{} = {}.Sample({}, {}).{};".format(self.result_arg, self.texture_arg.var, self.sampler_arg.var, self.uv_arg, "".join(self.texture_arg.values))
 
 class ArithmeticInstruction(ResultInstruction):
-    def __init__(self, token, args, trunc_args=True):
+    def __init__(self, token, args, trunc_args=True, trunc_len=0):
         ResultInstruction.__init__(self, token, args)
 
-        if sum(self.value_mask) > 1 and trunc_args:
+        expected_argcount = sum(self.value_mask)
+        if trunc_args:
             masked_calc_args = []
             for arg in self.calc_args:
-                masked_calc_args.append(arg.mask(self.value_mask))
+                if trunc_len > 0:
+                    mask = [True] * trunc_len + [False] * (4 - trunc_len)
+                    masked_calc_args.append(arg.mask(mask))
+                elif expected_argcount > arg.value_count:
+                    raise ValueError("Expected at least %d arg values, got %d" % (expected_argcount, sum(arg.value_mask)))
+                elif expected_argcount < arg.value_count:
+                    masked_calc_args.append(arg.mask(self.value_mask))
+                else:
+                    masked_calc_args.append(arg)
             self.calc_args = masked_calc_args
 
 class BinaryArithmeticInstruction(ArithmeticInstruction):
@@ -76,8 +85,8 @@ class BinaryArithmeticInstruction(ArithmeticInstruction):
         return "{} = {} {} {};".format(self.result_arg, self.calc_args[0], self.sep, self.calc_args[1])
 
 class FuncInstruction(ArithmeticInstruction):
-    def __init__(self, token, args, f, trunc_args=True):
-        ArithmeticInstruction.__init__(self, token, args, trunc_args)
+    def __init__(self, token, args, f, trunc_args=True, trunc_len=0):
+        ArithmeticInstruction.__init__(self, token, args, trunc_args, trunc_len)
         self.f = f
 
     def disassemble(self):
@@ -89,7 +98,7 @@ class MoveInstruction(ArithmeticInstruction):
 
 class MoveCondInstruction(ArithmeticInstruction):
     def disassemble(self):
-        return "{} = if {} then {} else {};".format(self.result_arg, self.calc_args[0], self.calc_args[1], self.calc_args[2])
+        return "{} = (uint){} ? {} : {};".format(self.result_arg, self.calc_args[0], self.calc_args[1], self.calc_args[2])
 
 class BitfieldInsert(ArithmeticInstruction):
     def disassemble(self):
@@ -98,6 +107,10 @@ class BitfieldInsert(ArithmeticInstruction):
 class MADDInstruction(ArithmeticInstruction):
     def disassemble(self):
         return "{} = ({} * {}) + {};".format(self.result_arg, self.calc_args[0], self.calc_args[1], self.calc_args[2])
+
+class DiscardNZInstruction(ResultInstruction):
+    def disassemble(self):
+        return "if ({} != 0) {{ discard; }}".format(self.result_arg)
 
 def extract_instruction_data(tokens):
     tokens = list(filter(lambda x: not isinstance(x, (WhitespaceToken, NewlineToken, RegexToken_Impl)), tokens))

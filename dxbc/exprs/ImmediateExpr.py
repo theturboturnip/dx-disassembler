@@ -3,12 +3,17 @@ import re
 from dxbc.exprs.ValueExpr import ValueExpr
 
 coarse_regex = re.compile(r"l\(([^)]+)\)")
-
+constructor_names = {
+    int: "uint",
+    hex: "uint",
+    float: "float"
+}
 
 class ImmediateExpr(ValueExpr):
     def __init__(self, str_data, values, value_type):
         ValueExpr.__init__(self, str_data, values)
         self.value_type = value_type
+        self.value_type_constr = constructor_names[self.value_type] + str(len(values))
 
     def __getitem__(self, index):
         return self.values[index]
@@ -42,5 +47,5 @@ class ImmediateExpr(ValueExpr):
 
     def __str__(self):
         if len(self.values) > 1:
-            return "({})".format(", ".join([str(self.value_type(x)) for x in self.values]))
+            return "{}({})".format(self.value_type_constr, ", ".join([str(self.value_type(x)) for x in self.values]))
         return str(self.value_type(self.values[0]))
