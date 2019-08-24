@@ -1,4 +1,4 @@
-from dxbc.tokens.Token import Token
+from dxbc.tokens.Base import RegexToken, Token
 
 closers = {
     '(': ')',
@@ -52,3 +52,8 @@ class ExpressionToken_Impl(Token, ExpressionToken):
 
     def __str__(self):
         return "{}<{}>".format(super().__str__(), type(self.expr).__name__)
+
+
+LineNumberToken = RegexToken(r"^(\d+):", "LineNumberToken")
+
+InstructionNameToken = RegexToken(r"[^\s]+", "InstructionNameToken")

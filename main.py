@@ -1,20 +1,26 @@
-import dxbc
 from dxbc.Instruction import *
 from dxbc.InstructionMap import getInstructionType
-from dxbc.tokens import *
 from dxbc.exprs import *
+from dxbc.tokens import *
+from dxbc.v2.tokens.Tokens import ValueToken
 from utils import *
 
 
 CT = CompoundToken
 OT = OptionalToken
 
-value_expr_token = ExpressionToken(ValueExpr)
-arguments_token = OT(CT(ExpressionToken(SwizzleOutputExpr), RepeatingToken(CT(RegexToken(","), WhitespaceToken, value_expr_token))))
+value_expr_token = ValueToken#ExpressionToken(ValueExpr)
+arguments_token = OT(CT(
+    value_expr_token,
+    #ExpressionToken(SwizzleOutputExpr),
+    RepeatingToken(
+        CT(RegexToken(",", "comma"), WhitespaceToken, value_expr_token)
+    )
+))
 instruction_token = CT(WhitespaceToken, LineNumberToken, WhitespaceToken,
                        InstructionNameToken, WhitespaceToken, arguments_token, OT(NewlineToken))
 
-from shader_source import ps_instruction_str2 as instruction_str
+from shader_source import ps_instruction_str as instruction_str
 
 remaining = instruction_str
 while True:

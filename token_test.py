@@ -1,5 +1,7 @@
 from dxbc.exprs import ValueExpr
 from dxbc.tokens import *
+from dxbc.tokens.BasicTokens import WhitespaceToken
+from dxbc.tokens.Combinators import CompoundToken, OptionalToken, RepeatingToken
 from utils import list_str
 
 CT = CompoundToken
