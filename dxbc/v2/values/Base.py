@@ -1,5 +1,5 @@
-from enum import Enum
-from typing import List, Type
+from enum import IntEnum
+from typing import List, Type, Tuple
 
 from dxbc.Errors import DXBCError
 
@@ -58,10 +58,16 @@ class Value:
                 and self.negated == other.negated
                 and self.assignable == other.assignable)
 
+    def get_output_mask(self) -> Tuple[bool, bool, bool, bool]:
+        raise NotImplementedError()
+
 
 class ScalarValueBase(Value):
     def __init__(self, scalar_type: type, negated: bool, assignable: bool):
         super().__init__([scalar_type], negated, assignable)
+
+    def get_output_mask(self) -> Tuple[bool, bool, bool, bool]:
+        return (True, False, False, False)
 
 
 class VectorValueBase(Value):
@@ -71,6 +77,10 @@ class VectorValueBase(Value):
         scalar_values = list(scalar_values)
         if not all(isinstance(x, ScalarValueBase) for x in scalar_values):
             raise DXBCError("Tried to make a Vector with non-scalar components!")
+        if len(scalar_values) > 4:
+            raise DXBCError("Tried to make a Vector with >4 values")
+        if len(scalar_values) < 2:
+            raise DXBCError("Tried to make a Vector with <2 values")
         super().__init__([x.value_type for x in scalar_values], negated, all([x.assignable for x in scalar_values]))
         self.scalar_values = scalar_values
 
@@ -79,7 +89,7 @@ class VectorValueBase(Value):
                 and self.scalar_values == other.scalar_values)
 
 
-class VectorComponent(Enum):
+class VectorComponent(IntEnum):
     x = 0
     y = 1
     z = 2

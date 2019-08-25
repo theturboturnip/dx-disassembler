@@ -1,9 +1,9 @@
-from typing import List, cast
+from typing import List, cast, Tuple
 
 from dxbc.Errors import DXBCError
-from dxbc.v2 import VarNames
-from dxbc.v2.Base import VectorValueBase, ScalarValueBase
-from dxbc.v2.Scalar import SingleVectorComponent
+from dxbc.v2.values import VarNames
+from dxbc.v2.values import VectorValueBase, ScalarValueBase, Value
+from dxbc.v2.values import SingleVectorComponent
 from utils import FirstPossibleOf
 
 
@@ -11,12 +11,16 @@ class UnnamedVectorValue(VectorValueBase):
     """
     A vector value created from multiple origins.
     """
+    def get_output_mask(self) -> Tuple[bool, bool, bool, bool]:
+        # This will always return Tuple of 4 bools, the static checker can't tell
+        return tuple([True] * self.num_components + [False] * (4 - self.num_components))
 
     def __repr__(self):
-        return "UnnamedVectorValue {} {} {} r/w:{}".format(str(self.value_type), self.negated, ", ".join(repr(x) for x in self.scalar_values), self.assignable)
+        return "UnnamedVectorValue {} {} {} r/w:{}".format(self.value_type.__name__, self.negated, ", ".join(repr(x) for x in self.scalar_values), self.assignable)
 
     def __str__(self):
-        return "-{}{}({})".format("-" if self.negated else "", str(self.value_type), self.num_components, ", ".join(str(x) for x in self.scalar_values))
+        return "{}{}{}({})".format("-" if self.negated else "", self.value_type.__name__, self.num_components, ", ".join(str(x) for x in self.scalar_values))
+
 
 class SwizzledVectorValue(VectorValueBase):
     """
@@ -46,10 +50,18 @@ class SwizzledVectorValue(VectorValueBase):
                 and self.vector_name == other.vector_name
                 and self.components == other.components)
 
+    def get_output_mask(self) -> Tuple[bool, bool, bool, bool]:
+        # This will always return Tuple of 4 bools, the static checker can't tell
+        mask = [False] * 4
+        for comp in self.components:
+            mask[comp] = True
+        return tuple(mask)
+
     def __repr__(self):
         return "{}{}.{}".format("-" if self.negated else "", self.vector_name, "".join([x.name for x in self.components]))
     def __str__(self):
         return repr(self)
+
 
 # When created, will return a SwizzledVectorValue if all arguments come from the same named vector.
 # Otherwise, will return a NewVectorValue.
@@ -64,4 +76,21 @@ def trim_components(vec: VectorValueBase, component_count: int) -> VectorValueBa
 
     # Promote to SwizzledVectorValue if possible
     # (in case something like (a.x, a.y, a.z, 1.0) is trimmed to 3 components)
-    return VectorValue(new_components[0:component_count])
+    return VectorValue(new_components[0:component_count], negated=vec.negated)
+
+
+def mask_components(vec: VectorValueBase, component_mask: Tuple[bool, bool, bool, bool]) -> Value:
+    new_components = []
+    try:
+        for (i, mask) in enumerate(component_mask):
+            if mask:
+                new_components.append(vec.scalar_values[i])
+    except IndexError:
+        raise DXBCError("Tried to unmask components that didn't exist. mask: {}, scalar_values: {}".format(
+            component_mask, vec.scalar_values
+        ))
+    if len(new_components) == 0:
+        raise DXBCError("Masked out all components of vector")
+    elif len(new_components) == 1:
+        return new_components[0]
+    return VectorValue(new_components, negated=vec.negated)

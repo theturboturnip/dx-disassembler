@@ -1,9 +1,6 @@
-import difflib
-
 from dxbc.Errors import DXBCError
-from dxbc.v2 import VarNames
-from dxbc.v2.Base import ScalarValueBase, VectorComponent
-from dxbc.v2.VarNames import VarNameBase
+from dxbc.v2.values import ScalarValueBase, VectorComponent
+from dxbc.v2.values import VarNameBase
 
 
 class ImmediateScalar(ScalarValueBase):

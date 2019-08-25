@@ -15,7 +15,7 @@ ps_instruction_str = """
   13: mov o0.w, r0.x
   14: and r0.y, l(0x00400000), cb13[0].x
   15: ine r0.y, r0.y, l(0)
-  16: dp3 r0.z, v2.xyzx, cb12[6].xyzx
+  16: dp3 r0.z, values.xyzx, cb12[6].xyzx
   17: lt r0.z, r0.z, l(0)
   18: movc r0.w, r0.z, l(282), l(266)
   19: and r1.x, l(6), cb7[8].w
@@ -52,9 +52,9 @@ ps_instruction_str = """
   50: rsq r1.y, r1.y
   51: mul r1.yzw, r1.yyyy, v3.xxyz
   52: mul r3.xyz, r0.yyyy, r1.yzwy
-  53: dp3 r0.y, v2.xyzx, v2.xyzx
+  53: dp3 r0.y, values.xyzx, values.xyzx
   54: rsq r0.y, r0.y
-  55: mul r4.xyz, r0.yyyy, v2.xyzx
+  55: mul r4.xyz, r0.yyyy, values.xyzx
   56: mul r5.xyz, r1.zwyz, r4.zxyz
   57: mad r5.xyz, r4.yzxy, r1.wyzw, -r5.xyzx
   58: mul r5.xyz, r5.xyzx, v3.wwww
@@ -106,7 +106,7 @@ vs_instruction_str = """
    1: dp3 r0.x, v1.yzwy, l(1.000000, 1.000000, 1.000000, 0.000000)
    2: add r0.x, -r0.x, l(1.000000)
    3: mov r1.xyz, l(0, 0, 0, 0)
-   4: imul null, r2.xyzw, v2.xyzw, l(3, 3, 3, 3)
+   4: imul null, r2.xyzw, values.xyzw, l(3, 3, 3, 3)
    5: round_ni r1.w, cb10[r2.x + 2].w
    6: add r3.xyzw, -r1.zzzw, cb10[r2.y + 2].xyzw
    7: mul r3.xyzw, r3.xyzw, v1.yyyy
@@ -181,7 +181,7 @@ ps_instruction_str2 = """
   10: mad r0.xzw, cb6[2].xxxx, r1.xxyz, r0.xxxx
   11: mul r0.xzw, r0.xxzw, cb6[0].xxyz
   12: max o0.xyz, r0.xzwx, l(0.003922, 0.003922, 0.003922, 0.000000)
-  13: dp3 r0.x, v2.xyzx, cb12[6].xyzx
+  13: dp3 r0.x, values.xyzx, cb12[6].xyzx
   14: lt r0.x, r0.x, l(0)
   15: ftou r0.w, cb7[8].w
   16: and r0.w, r0.w, l(6)
@@ -215,10 +215,10 @@ ps_instruction_str2 = """
   44: div r1.w, l(1.000000, 1.000000, 1.000000, 1.000000), r1.w
   45: mul r2.xyz, r1.wwww, v3.zxyz
   46: mul r3.xyz, r0.xxxx, r2.yzxy
-  47: dp3 r0.x, v2.xyzx, v2.xyzx
+  47: dp3 r0.x, values.xyzx, values.xyzx
   48: sqrt r0.x, r0.x
   49: div r0.x, l(1.000000, 1.000000, 1.000000, 1.000000), r0.x
-  50: mul r4.xyz, r0.xxxx, v2.xyzx
+  50: mul r4.xyz, r0.xxxx, values.xyzx
   51: mul r5.xyz, r2.zxyz, r4.zxyz
   52: mad r2.xyz, r4.yzxy, r2.xyzx, -r5.xyzx
   53: mul r2.xyz, r2.xyzx, v3.wwww

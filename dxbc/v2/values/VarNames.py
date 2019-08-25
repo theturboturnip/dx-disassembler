@@ -1,4 +1,4 @@
-from dxbc.v2.Base import ScalarValueBase
+from dxbc.v2.values import ScalarValueBase
 
 
 class VarNameBase:

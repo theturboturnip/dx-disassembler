@@ -1,8 +1,5 @@
 from dxbc.tokens import *
-from dxbc.v2.Base import Value, Untyped
-from dxbc.v2.Scalar import *
-from dxbc.v2.VarNames import *
-from dxbc.v2.Vector import *
+from dxbc.v2.values import Value, Untyped
 
 NegateToken = RegexToken("-", "NegateToken")
 HexPrefixToken = RegexToken("0x", "HexPrefixToken")
@@ -126,7 +123,7 @@ class SwizzledIndexedValueToken(
                                        negated)
 
 
-UnnamedVectorStartToken = RegexToken(r"\(", "UnnamedVectorStartToken")
+UnnamedVectorStartToken = RegexToken(r"l\(", "UnnamedVectorStartToken")
 UnnamedVectorEndToken = RegexToken(r"\)", "UnnamedVectorEndToken")
 VectorValueSeparatorToken = CompoundToken(OptionalToken(WhitespaceToken),
                                           RegexToken(r",", "CommaToken"),
@@ -154,10 +151,15 @@ class UnnamedVectorValueToken(
             token_list = token_list[1:]
 
         token_list = token_list[1:-1] # Cut off UnnamedVectorStart/End tokens
-        self.value = UnnamedVectorValue(
-            [x.value for x in filter(lambda x: isinstance(x, NamedOrImmediateValueTokenTypes), token_list)],
-            negated
-        )
+        values = [x.value for x in filter(lambda x: isinstance(x, NamedOrImmediateValueTokenTypes), token_list)]
+        if len(values) == 1:
+            # TODO: Handle negation?
+            self.value = values[0]
+        else:
+            self.value = UnnamedVectorValue(
+                values,
+                negated
+            )
 
 
 ValueToken = FirstOfTokens(UnnamedVectorValueToken, SwizzledIndexedValueToken, SwizzledBasicNamedValueToken,

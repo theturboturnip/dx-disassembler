@@ -2,9 +2,6 @@ import unittest
 from itertools import permutations
 from numbers import Number
 
-from dxbc.v2.tokens.Tokens import *
-from utils import reraise
-
 
 class ImmediateScalarValueTokenTestCase(unittest.TestCase):
     def test_whitespace_throws(self):

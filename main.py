@@ -1,8 +1,7 @@
 from dxbc.Instruction import *
 from dxbc.InstructionMap import getInstructionType
-from dxbc.exprs import *
 from dxbc.tokens import *
-from dxbc.v2.tokens.Tokens import ValueToken
+from dxbc.v2.values.tokens import ValueToken
 from utils import *
 
 
@@ -18,17 +17,18 @@ arguments_token = OT(CT(
     )
 ))
 instruction_token = CT(WhitespaceToken, LineNumberToken, WhitespaceToken,
-                       InstructionNameToken, WhitespaceToken, arguments_token, OT(NewlineToken))
+                       InstructionNameToken, OT(CT(WhitespaceToken, arguments_token, OT(NewlineToken))))
 
 from shader_source import ps_instruction_str as instruction_str
 
 remaining = instruction_str
-while True:
+while remaining:
     try:
         tokens, remaining = instruction_token.eat(remaining)
         #print(list_str(tokens))
-    except ValueError as e:
-        print(e)
+    except DXBCError as e:
+        current_instruction_line = remaining[:remaining.index("\n")]
+        reraise(e, f"{{}} encountered when tokenizing {current_instruction_line}, tokenized {instruction_str[:-len(remaining)]}")
         break
 
     try:

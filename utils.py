@@ -14,9 +14,9 @@ def list_dict(d):
 
 
 def reraise(e, extra):
-    err = copy(e)
-    err.message = extra.format(str(e))
-    raise err.with_traceback(sys.exc_info()[2])
+    #err = copy(e)
+    #err.message = extra.format(str(e))
+    raise type(e)(extra.format(str(e))).with_traceback(sys.exc_info()[2])
 
 
 def FirstPossibleOf(types: [Type], potential_errors: [Type[Exception]] = None):
