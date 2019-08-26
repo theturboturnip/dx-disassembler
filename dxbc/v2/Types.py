@@ -9,14 +9,14 @@ class ScalarType(Enum):
     Untyped = 0
 
     Float = 1
-    Int = 2
+    Uint = 2
     Hex = 3
 
     def name(self):
         return {
             ScalarType.Float: "float",
-            ScalarType.Int: "int",
-            ScalarType.Hex: "int",
+            ScalarType.Uint: "uint",
+            ScalarType.Hex: "uint",
             ScalarType.Untyped: "???"
         }[self]
 
@@ -28,8 +28,8 @@ class ScalarType(Enum):
 
     def format_as_string(self, value):
         if self == ScalarType.Float:
-            return f"{value:f}"
-        elif self == ScalarType.Int:
+            return f"{value:g}"
+        elif self == ScalarType.Uint:
             return f"{value:d}"
         elif self == ScalarType.Hex:
             return hex(value)
@@ -40,7 +40,7 @@ class ScalarType(Enum):
     def enum_from_type(cls, type: Type):
         return {
             float: ScalarType.Float,
-            int: ScalarType.Int,
+            int: ScalarType.Uint,
         }[type]
 
 

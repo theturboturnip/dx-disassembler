@@ -1,9 +1,7 @@
-from dxbc.Errors import DXBCInstructionDecodeError
 from dxbc.tokens import *
 from dxbc.exprs import *
-from dxbc.tokens.Lang import InstructionNameToken
 from dxbc.v2.values import *
-from dxbc.v2.values.tokens import ValueHoldingToken
+from dxbc.v2.values import mask_components, trim_components
 
 
 class Instruction:

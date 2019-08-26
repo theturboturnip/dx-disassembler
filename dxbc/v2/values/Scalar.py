@@ -1,4 +1,5 @@
 import copy
+import types
 
 from dxbc.Errors import DXBCError
 from dxbc.v2.Types import ScalarType
@@ -28,6 +29,19 @@ def cast_scalar(scalar: ScalarValueBase, scalar_type: ScalarType) -> ScalarValue
     scalar.scalar_type = scalar_type
     return scalar
 
+def reinterpret_scalar(scalar: ScalarValueBase, scalar_type: ScalarType) -> ScalarValueBase:
+    if scalar.scalar_type == scalar_type:
+        return scalar
+    scalar = copy.copy(scalar)
+    scalar.scalar_type = scalar_type
+    old_str = scalar.__str__
+    scalar.__class__ = type(f"reinterpreted{scalar.__class__.__name__}",
+                            (scalar.__class__,),
+                            {
+                                "__str__": lambda self: f"{scalar_type.name()}({old_str()})"
+                            })
+    #scalar.__str__ = lambda self: f"({scalar_type.name()}){type(scalar).__str__(self)}"
+    return scalar
 
 class ImmediateScalar(ScalarValueBase):
     def __init__(self, value, scalar_type: ScalarType, negated: bool):

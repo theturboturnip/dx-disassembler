@@ -1,4 +1,4 @@
-from typing import List, cast, Tuple, overload, Union
+from typing import List, cast, Tuple, overload
 
 from dxbc.Errors import DXBCError
 from dxbc.v2.values import VarNames
@@ -70,55 +70,3 @@ class SwizzledVectorValue(VectorValueBase):
 # When created, will return a SwizzledVectorValue if all arguments come from the same named vector.
 # Otherwise, will return a NewVectorValue.
 VectorValue = FirstPossibleOf([SwizzledVectorValue, UnnamedVectorValue])
-
-@overload
-def trim_components(vec: VectorValueBase, component_count: int) -> VectorValueBase:
-    pass
-
-@overload
-def trim_components(vec: ScalarValueBase, component_count: int) -> ScalarValueBase:
-    pass
-
-def trim_components(vec: Union[ScalarValueBase, VectorValueBase], component_count: int):
-    if isinstance(vec, ScalarValueBase):
-        if component_count != 1:
-            raise DXBCError("Scalars can only be trimmed to 1 component")
-        return vec
-
-    new_components = vec.scalar_values
-    if len(new_components) < component_count or component_count <= 0:
-        raise DXBCError("Invalid argument to trim_components, tried to trim vector with {} comps to {}".format(
-            len(new_components), component_count))
-
-    # Promote to SwizzledVectorValue if possible
-    # (in case something like (a.x, a.y, a.z, 1.0) is trimmed to 3 components)
-    return VectorValue(new_components[0:component_count], negated=vec.negated)
-
-@overload
-def mask_components(vec: ScalarValueBase, component_mask: Tuple[bool, bool, bool, bool]) -> ScalarValueBase:
-    pass
-
-@overload
-def mask_components(vec: VectorValueBase, component_mask: Tuple[bool, bool, bool, bool]) -> Value:
-    pass
-
-def mask_components(vec: Union[ScalarValueBase, VectorValueBase], component_mask: Tuple[bool, bool, bool, bool]) -> Value:
-    if isinstance(vec, ScalarValueBase):
-        if component_mask != (True, False, False, False):
-            raise DXBCError(f"Scalars can only be masked to the first component, attempted {component_mask}")
-        return vec
-
-    new_components = []
-    try:
-        for (i, mask) in enumerate(component_mask):
-            if mask:
-                new_components.append(vec.scalar_values[i])
-    except IndexError:
-        raise DXBCError("Tried to unmask components that didn't exist. mask: {}, scalar_values: {}".format(
-            component_mask, vec.scalar_values
-        ))
-    if len(new_components) == 0:
-        raise DXBCError("Masked out all components of vector")
-    elif len(new_components) == 1:
-        return new_components[0]
-    return VectorValue(new_components, negated=vec.negated)

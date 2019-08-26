@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from dxbc.Errors import DXBCError
 from dxbc.v2.Types import get_least_permissive_container_type, ScalarType

@@ -1,15 +1,17 @@
 from itertools import chain
 from typing import Mapping, Dict
 
+from dxbc.Errors import DXBCInstructionDecodeError
 from dxbc.Instruction import *
 from dxbc.InstructionMap import getInstructionType
 from dxbc.tokens import *
 from dxbc.v2.program.Functions import TruncateToLength, TruncateToOutput, makeTruncateToLength, ArgumentTruncation, \
-    NullTruncate
+    NullTruncate, function_map, Function
 from dxbc.v2.program.State import ProgramState
 from dxbc.v2.program.Variables import *
 from dxbc.v2.values.Scalar import cast_scalar
-from dxbc.v2.values.tokens import ValueToken
+from dxbc.v2.values.Utils import map_scalar_values, get_type_string
+from dxbc.v2.values.tokens import ValueToken, ValueHoldingToken
 from utils import *
 import copy
 
@@ -40,6 +42,63 @@ def extract_instruction_data(tokens: List[Token]):
 
     return instr_tokens[0].str_data, arg_vals
 
+def update_state(function: Function, input_vals: List[Value], output_value: Value,
+                     current_state: ProgramState):
+    global total_scalar_variables, total_vector_variables
+
+    output_ids = get_scalar_ids(output_value)
+
+    # Determine data dependencies.
+    output_deps = {x: None for x in output_ids}
+    if isinstance(function, TruncateToOutput):
+        # If we're truncating to output, each component of each input
+        # maps directly to one component of the output.
+        output_deps = {x: [] for x in output_ids}
+        for input_val in input_vals:
+            input_ids = get_scalar_ids(input_val)
+            if len(input_ids) == 0:
+                # This means there weren't any named parts of this input
+                continue
+            if len(input_ids) != len(output_ids):
+                raise DXBCError("Mismatch in input ids to output ids")
+            for i in range(len(output_ids)):
+                output_deps[output_ids[i]].append(input_ids[i])
+        output_deps = {k: list(set(v)) for (k, v) in output_deps.items()}
+    else:
+        # Otherwise, every component of output depends on every component of input
+        input_set = list(set(chain.from_iterable(get_scalar_ids(x) for x in input_vals)))
+        output_deps = {k: input_set for k in output_deps}
+
+    func_output_type = function.get_output_type(input_vals)
+
+    def output_needs_variable(output_id):
+        return (output_id.base_name.name in registers
+                and (output_id not in output_deps[output_id] or
+                     func_output_type is not current_state.get_type(output_id, function.output_type)))
+
+    # Detect if we need to create any new variables
+    # If a value is set based entirely on other components, all trace of the previous value is lost.
+    # Therefore, it can be renamed to a new variable at this point.
+    if any(output_needs_variable(output_id) for output_id in output_ids):
+        output_scalar_type = func_output_type
+        if len(output_ids) > 1:
+            new_var_name = VarNameBase(f"vector_{total_vector_variables}")
+            total_vector_variables += 1
+            for (i, output_id) in enumerate(output_ids):
+                current_state.set(
+                    output_id,
+                    SingleVectorComponent(new_var_name, VectorComponent(i), output_scalar_type, False),
+                    output_scalar_type
+                )
+        else:
+            new_var_name = VarNameBase(f"scalar_{total_scalar_variables}")
+            total_scalar_variables += 1
+            current_state.set(output_ids[0], ScalarVariable(new_var_name, output_scalar_type, False),
+                              output_scalar_type)
+        return True
+    return False
+    #print(f"{get_type_string(output_scalar_type, output_value.num_components)} {new_var_name};")
+
 from shader_source import ps_instruction_str as instruction_str
 
 remaining = instruction_str
@@ -58,15 +117,20 @@ vector_constants = {
     "v2": ScalarType.Float,
     "v3": ScalarType.Float,
     "v4": ScalarType.Float,
-    "vCoverageMask": ScalarType.Int,
+    "vCoverageMask": ScalarType.Uint,
     "values": ScalarType.Float,
 
     "t0": ScalarType.Untyped,
     "t1": ScalarType.Untyped,
     "t2": ScalarType.Untyped,
+
+    "o0": ScalarType.Float,
+    "o1": ScalarType.Float,
+    "o2": ScalarType.Float,
+    "o3": ScalarType.Float,
 }
 scalar_values = {
-    "oMask": ScalarType.Int
+    "oMask": ScalarType.Uint
 }
 initial_state = {
     ScalarID(VarNameBase(name), comp): VariableState(None, t)
@@ -86,48 +150,9 @@ initial_state.update({
 current_state: ProgramState = ProgramState(initial_state)
 state_stack = []
 registers = [f"r{i}" for i in range(0, 7)]
-argument_truncations = {
-    "sample_indexable(texture2d)(float,float,float,float)": NullTruncate, #None,
-
-    "discard_nz" : None,
-
-    "add": TruncateToOutput,
-    "iadd": TruncateToOutput,
-    "mul": TruncateToOutput,
-    "div": TruncateToOutput,
-    "or": TruncateToOutput,
-    "and": TruncateToOutput,
-    "xor": TruncateToOutput,
-    "mov": TruncateToOutput,
-    "movc": TruncateToOutput,
-    "mad": TruncateToOutput,
-    "lt" : TruncateToOutput,
-    "ine": TruncateToOutput,
-    "ne": TruncateToOutput,
-    "eq": TruncateToOutput,
-    "ieq": TruncateToOutput,
-    "ishl": TruncateToOutput,
-
-    "max": TruncateToOutput,
-    "min": TruncateToOutput,
-    "sqrt": TruncateToOutput,
-    "rsq":  TruncateToOutput,
-    "f16tof32":  TruncateToOutput,
-    "ftou":  TruncateToOutput,
-    "dp2": makeTruncateToLength(2),
-    "dp3": makeTruncateToLength(3),
-
-    "bfi": TruncateToOutput,
-
-    "ret": None
-}
-
-
-def map_scalar_values(value: Value, f: Callable[[ScalarValueBase], ScalarValueBase]) -> Value:
-    if isinstance(value, ScalarValueBase):
-        return f(value)
-    elif isinstance(value, VectorValueBase):
-        return VectorValue([f(scalar) for scalar in value.scalar_values], False)
+#argument_truncations = {
+#
+#}
 
 def infer_type(value: Value, state: ProgramState) -> Value:
     if value.scalar_type is not ScalarType.Untyped:
@@ -173,81 +198,51 @@ while remaining:
         break
 
     try:
-        # TODO Detect the function and do type-checking
-        truncation_type = argument_truncations[instr_name]
-        if truncation_type is None:
-            continue
-        truncation = truncation_type()
-        input_vals = arg_vals[1:]
-        output_value = arg_vals[0]
+        # Detect the function and do type-checking
+        function = function_map[instr_name]
+
+        if not function.output_type:
+            input_vals = arg_vals
+            output_value = None
+        else:
+            input_vals = arg_vals[1:]
+            output_value = arg_vals[0]
+            #output_value = map_scalar_values(lambda s: cast_scalar(s, function.output_type), output_value)
+
+        # Validate input and infer types
+        input_vals = [infer_type(x, current_state) for x in input_vals]
+        function.validate_input_length(input_vals)
 
         # Apply argument truncation
-        input_vals = truncation.truncate_args(input_vals, output_value)
+        input_vals = function.truncate_args(input_vals, output_value)
 
-        # Apply typechecking
-        input_vals = [infer_type(x, current_state) for x in input_vals]
-
-
-        output_ids = get_scalar_ids(output_value)
-
-        # Determine data dependencies.
-        output_deps = {x: None for x in output_ids}
-        if isinstance(truncation, TruncateToOutput):
-            # If we're truncating to output, each component of each input
-            # maps directly to one component of the output.
-            output_deps = {x: [] for x in output_ids}
-            for input_val in input_vals:
-                input_ids = get_scalar_ids(input_val)
-                if len(input_ids) == 0:
-                    # This means there weren't any named parts of this input
-                    continue
-                if len(input_ids) != len(output_ids):
-                    raise DXBCError("Mismatch in input ids to output ids")
-                for i in range(len(output_ids)):
-                    output_deps[output_ids[i]].append(input_ids[i])
-            output_deps = {k: list(set(v)) for (k,v) in output_deps.items()}
-        else:
-            # Otherwise, every component of output depends on every component of input
-            input_set = list(set(chain.from_iterable(get_scalar_ids(x) for x in input_vals)))
-            output_deps = { k: input_set for k in output_deps }
-
-        def output_needs_variable(output_id):
-            return (output_id.base_name.name in registers
-                    and output_id not in output_deps[output_id])
-
-        """#print(f"Creating var for {output_id}")
-        new_var_name = f"_var{total_variables}"
-        total_variables += 1
-        current_state[output_id] = new_var_name"""
-
-        # Detect if we need to create any new variables
-        # If a value is set based entirely on other components, all trace of the previous value is lost.
-        # Therefore, it can be renamed to a new variable at this point.
-        if any(output_needs_variable(output_id) for output_id in output_ids):
-            if len(output_ids) > 1:
-                new_var_name = VarNameBase(f"_vector{total_vector_variables}")
-                total_vector_variables += 1
-                for (i, output_id) in enumerate(output_ids):
-                    current_state.set(
-                        output_id,
-                        SingleVectorComponent(new_var_name, VectorComponent(i), ScalarType.Untyped, False),
-                        ScalarType.Untyped
-                    )
-            else:
-                new_var_name = VarNameBase(f"_scalar{total_scalar_variables}")
-                total_scalar_variables += 1
-                current_state.set(output_ids[0], ScalarVariable(new_var_name, ScalarType.Untyped, False), ScalarType.Untyped)
+        new_variable = False
+        if output_value:
+            new_variable = update_state(function, input_vals, output_value, current_state)
 
         def apply_remap(value: Value, state: ProgramState):
             if isinstance(value, SingleVectorComponent):
-                return state.get_name(ScalarID(value), value)
+                name = copy.copy(state.get_name(ScalarID(value), value))
+                name.negated = value.negated
+                return name
             elif isinstance(value, SwizzledVectorValue):
-                return VectorValue([state.get_name(ScalarID(comp), comp) for comp in value.scalar_values], False)
+                return VectorValue([state.get_name(ScalarID(comp), comp) for comp in value.scalar_values], value.negated)
             else:
                 return value
 
         remapped_input = [apply_remap(x, previous_state) for x in input_vals]
-        print(f"{apply_remap(output_value, current_state)} = {instr_name} {list_str(remapped_input)}")
+
+        disassembly = ""
+        if output_value:
+            remapped_output = apply_remap(output_value, current_state)
+            if new_variable:
+                disassembly += f"{get_type_string(remapped_output.scalar_type, remapped_output.num_components)} "
+            disassembly += f"{str(remapped_output)} = "
+
+        disassembly += f"{function.disassemble_call(remapped_input)};"
+        print (disassembly)
+
+        #print(f"{apply_remap(output_value, current_state)} = {function.name} {list_str(remapped_input)}")
         #print(f"\tinput types: {list_str(x.scalar_type for x in input_vals)}")
         #print(f"\t{instr_name} {list_str(input_vals)} -> {output_value}")
         #print(f"\t{output_deps}")

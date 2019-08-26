@@ -30,7 +30,7 @@ class ImmediateScalarValueToken(
         if isinstance(token_list[0], NegateToken):
             negated = True
             token_list = token_list[1:]
-        value_type = ScalarType.Int
+        value_type = ScalarType.Uint
         if len(token_list) > 1:
             # Either the HexToken is here, or the DotToken is
             if isinstance(token_list[0], HexPrefixToken):
@@ -45,7 +45,7 @@ class ImmediateScalarValueToken(
 
         if value_type is ScalarType.Hex:
             value = int(numerator_tok.str_data, 16)
-        elif value_type is ScalarType.Int:
+        elif value_type is ScalarType.Uint:
             value = int(numerator_tok.str_data)
         elif value_type is ScalarType.Float:
             value = float(f"{numerator_tok.str_data}.{denominator_tok.str_data}")
