@@ -7,17 +7,21 @@ from dxbc.v2.values import *
 
 
 class VariableState:
-    last_modified: int
+    name: Optional[ScalarValueBase]
     scalar_type: ScalarType
 
-    # TODO Shouldn't let scalar_type be defaulted
-    def __init__(self, last_modified: int, scalar_type: ScalarType = ScalarType.Untyped):
-        self.last_modified = last_modified
+    def __init__(self, name: Optional[ScalarValueBase], scalar_type: ScalarType):
+        self.name = name
         self.scalar_type = scalar_type
 
 
 class ScalarID:
+    """
+    The unique name of an assignable scalar value.
+    Subscripts are ignored for comparisons and hashing.
+    """
     base_name: VarNameBase
+    subscript: List[ScalarValueBase]
     component: Optional[VectorComponent]
 
     def __init__(self, base_var: Union[ScalarValueBase, VarNameBase], component: Optional[VectorComponent] = None):
@@ -32,6 +36,14 @@ class ScalarID:
         elif isinstance(base_var, VarNameBase):
             self.base_name = base_var
             self.component = component
+        else:
+            raise DXBCError(f"Encountered unknown type {type(base_var)}")
+
+        if isinstance(self.base_name, IndexedVarName):
+            self.subscript = self.base_name.indices
+            self.base_name = VarNameBase(self.base_name.name)
+        else:
+            self.subscript = []
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):
@@ -40,10 +52,14 @@ class ScalarID:
                 and self.component == other.component)
 
     def __repr__(self):
+        name = str(self.base_name)
+        # Ignore subscript
+        #if self.subscript:
+        #    name = "{}[{}]".format(name, " + ".join(str(x) for x in self.subscript))
         # Can't do `if self.component` here, because VectorComponent.x is 0 and would fail
         if self.component is not None:
-            return f"{self.base_name}.{self.component.name}"
-        return f"{self.base_name}"
+            return f"{name}.{self.component.name}"
+        return name
 
     def __hash__(self):
         # Quick and dirty hash

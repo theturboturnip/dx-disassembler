@@ -6,11 +6,11 @@ from dxbc.Errors import DXBCError
 
 
 class ScalarType(Enum):
-    Untyped = -1
+    Untyped = 0
 
-    Float = 0
-    Int = 1
-    Hex = 2
+    Float = 1
+    Int = 2
+    Hex = 3
 
     def name(self):
         return {

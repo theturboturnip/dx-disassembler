@@ -6,7 +6,9 @@ from dxbc.InstructionMap import getInstructionType
 from dxbc.tokens import *
 from dxbc.v2.program.Functions import TruncateToLength, TruncateToOutput, makeTruncateToLength, ArgumentTruncation, \
     NullTruncate
+from dxbc.v2.program.State import ProgramState
 from dxbc.v2.program.Variables import *
+from dxbc.v2.values.Scalar import cast_scalar
 from dxbc.v2.values.tokens import ValueToken
 from utils import *
 import copy
@@ -41,10 +43,8 @@ def extract_instruction_data(tokens: List[Token]):
 from shader_source import ps_instruction_str as instruction_str
 
 remaining = instruction_str
-current_state: Dict[ScalarID, ScalarValueBase] = {}
-state_stack = []
 # Any time an array access is made, all components are assumed to be of the mapped type
-array_constants = {
+vector_constants = {
     "cb5": ScalarType.Float,
     "cb6": ScalarType.Float,
     "cb7": ScalarType.Float,
@@ -52,7 +52,39 @@ array_constants = {
     "cb13": ScalarType.Float,
 
     "icb": ScalarType.Float,
+
+    "v0": ScalarType.Float,
+    "v1": ScalarType.Float,
+    "v2": ScalarType.Float,
+    "v3": ScalarType.Float,
+    "v4": ScalarType.Float,
+    "vCoverageMask": ScalarType.Int,
+    "values": ScalarType.Float,
+
+    "t0": ScalarType.Untyped,
+    "t1": ScalarType.Untyped,
+    "t2": ScalarType.Untyped,
 }
+scalar_values = {
+    "oMask": ScalarType.Int
+}
+initial_state = {
+    ScalarID(VarNameBase(name), comp): VariableState(None, t)
+    for comp in VectorComponent
+    for (name, t) in vector_constants.items()
+}
+initial_state.update({
+    ScalarID(VarNameBase(name)): VariableState(None, t)
+    for (name, t) in scalar_values.items()
+})
+initial_state.update({
+    ScalarID(VarNameBase(name)): VariableState(None, ScalarType.Untyped)
+    for name in [
+        "s0", "s1", "s2",
+    ]
+})
+current_state: ProgramState = ProgramState(initial_state)
+state_stack = []
 registers = [f"r{i}" for i in range(0, 7)]
 argument_truncations = {
     "sample_indexable(texture2d)(float,float,float,float)": NullTruncate, #None,
@@ -91,11 +123,34 @@ argument_truncations = {
 }
 
 
-def components_of(value: Value):
+def map_scalar_values(value: Value, f: Callable[[ScalarValueBase], ScalarValueBase]) -> Value:
     if isinstance(value, ScalarValueBase):
-        return iter([value])
+        return f(value)
     elif isinstance(value, VectorValueBase):
-        return iter(value.scalar_values)
+        return VectorValue([f(scalar) for scalar in value.scalar_values], False)
+
+def infer_type(value: Value, state: ProgramState) -> Value:
+    if value.scalar_type is not ScalarType.Untyped:
+        return value
+
+    if isinstance(value, ScalarValueBase):
+        val_id = ScalarID(value)
+        variable_type = state.get_type(val_id, default=None)
+        if not variable_type:
+            raise DXBCError(f"Variable for value {value} has no state, can't infer type")
+        if variable_type == ScalarType.Untyped:
+            # This type has been set to untyped, assume there's a reason and just pass it through
+            # This is for things like Samplers and Textures which we don't care about for typing purposes
+            return value
+        new_type = variable_type
+        return cast_scalar(value, new_type)
+    else:#f isinstance(value, SwizzledVectorValue):
+        return VectorValue([infer_type(c, state) for c in value.scalar_values], value.negated)
+
+
+#def infer_type(value: Value, state: Dict[ScalarID, VariableState]):
+#    return map_scalar_values(value, lambda x: infer_and_cast_to_scalar_type(x, state))
+
 
 current_tick = 0
 total_scalar_variables = 0
@@ -128,6 +183,10 @@ while remaining:
 
         # Apply argument truncation
         input_vals = truncation.truncate_args(input_vals, output_value)
+
+        # Apply typechecking
+        input_vals = [infer_type(x, current_state) for x in input_vals]
+
 
         output_ids = get_scalar_ids(output_value)
 
@@ -169,22 +228,27 @@ while remaining:
                 new_var_name = VarNameBase(f"_vector{total_vector_variables}")
                 total_vector_variables += 1
                 for (i, output_id) in enumerate(output_ids):
-                    current_state[output_id] = SingleVectorComponent(new_var_name, VectorComponent(i), ScalarType.Untyped, False)
+                    current_state.set(
+                        output_id,
+                        SingleVectorComponent(new_var_name, VectorComponent(i), ScalarType.Untyped, False),
+                        ScalarType.Untyped
+                    )
             else:
                 new_var_name = VarNameBase(f"_scalar{total_scalar_variables}")
                 total_scalar_variables += 1
-                current_state[output_ids[0]] = ScalarVariable(new_var_name, ScalarType.Untyped, False)
+                current_state.set(output_ids[0], ScalarVariable(new_var_name, ScalarType.Untyped, False), ScalarType.Untyped)
 
-        def apply_remap(value: Value, state: Dict[ScalarID, ScalarValueBase]):
+        def apply_remap(value: Value, state: ProgramState):
             if isinstance(value, SingleVectorComponent):
-                return state.get(ScalarID(value), value)
+                return state.get_name(ScalarID(value), value)
             elif isinstance(value, SwizzledVectorValue):
-                return VectorValue([state.get(ScalarID(comp), comp) for comp in value.scalar_values], False)
+                return VectorValue([state.get_name(ScalarID(comp), comp) for comp in value.scalar_values], False)
             else:
                 return value
 
         remapped_input = [apply_remap(x, previous_state) for x in input_vals]
         print(f"{apply_remap(output_value, current_state)} = {instr_name} {list_str(remapped_input)}")
+        #print(f"\tinput types: {list_str(x.scalar_type for x in input_vals)}")
         #print(f"\t{instr_name} {list_str(input_vals)} -> {output_value}")
         #print(f"\t{output_deps}")
     except DXBCError as e:
