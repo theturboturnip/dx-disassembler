@@ -1,5 +1,7 @@
 from dxbc.tokens import *
-from dxbc.v2.values import Value, Untyped
+from dxbc.v2.Definitions import VectorComponent
+from dxbc.v2.Types import ScalarType
+from dxbc.v2.values import *
 
 NegateToken = RegexToken("-", "NegateToken")
 HexPrefixToken = RegexToken("0x", "HexPrefixToken")
@@ -28,25 +30,24 @@ class ImmediateScalarValueToken(
         if isinstance(token_list[0], NegateToken):
             negated = True
             token_list = token_list[1:]
-        value_type = int
+        value_type = ScalarType.Int
         if len(token_list) > 1:
             # Either the HexToken is here, or the DotToken is
             if isinstance(token_list[0], HexPrefixToken):
-                value_type = hex
+                value_type = ScalarType.Hex
                 token_list = token_list[1:]
             else:
-                value_type = float
+                value_type = ScalarType.Float
         numerator_tok = token_list[0]
         denominator_tok = None
         if len(token_list) == 3:
             denominator_tok = token_list[2]
 
-        if value_type == hex:
+        if value_type is ScalarType.Hex:
             value = int(numerator_tok.str_data, 16)
-            value_type = int
-        elif value_type == int:
+        elif value_type is ScalarType.Int:
             value = int(numerator_tok.str_data)
-        elif value_type == float:
+        elif value_type is ScalarType.Float:
             value = float(f"{numerator_tok.str_data}.{denominator_tok.str_data}")
         else:
             raise DXBCTokenizeError("Invalid value_type detected: {}".format(value_type))
@@ -62,12 +63,12 @@ SwizzleToken = CompoundToken(RegexToken(r"\.", "DotToken"),
 # TODO: Only correctly handles Scalars/Swizzled Vectors, not Unnamed vectors. Should prob be renamed.
 def value_from_tokens(name: VarNameBase, component_tokens: List[ComponentToken], negated: bool) -> Value:
     if len(component_tokens) == 0:
-        return ScalarVariable(name, Untyped, negated)
+        return ScalarVariable(name, ScalarType.Untyped, negated)
     elif len(component_tokens) == 1:
-        return SingleVectorComponent(name, VectorComponent[component_tokens[0].str_data], Untyped, negated)
+        return SingleVectorComponent(name, VectorComponent[component_tokens[0].str_data], ScalarType.Untyped, negated)
     else:
         return VectorValue(
-            [SingleVectorComponent(name, VectorComponent[c.str_data], Untyped, False) for c in component_tokens],
+            [SingleVectorComponent(name, VectorComponent[c.str_data], ScalarType.Untyped, False) for c in component_tokens],
             negated)
 
 
@@ -123,7 +124,7 @@ class SwizzledIndexedValueToken(
                                        negated)
 
 
-UnnamedVectorStartToken = RegexToken(r"l\(", "UnnamedVectorStartToken")
+UnnamedVectorStartToken = RegexToken(r"l?\(", "UnnamedVectorStartToken")
 UnnamedVectorEndToken = RegexToken(r"\)", "UnnamedVectorEndToken")
 VectorValueSeparatorToken = CompoundToken(OptionalToken(WhitespaceToken),
                                           RegexToken(r",", "CommaToken"),

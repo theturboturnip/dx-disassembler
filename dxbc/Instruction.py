@@ -1,7 +1,9 @@
+from dxbc.Errors import DXBCInstructionDecodeError
 from dxbc.tokens import *
 from dxbc.exprs import *
 from dxbc.tokens.Lang import InstructionNameToken
-from dxbc.v2.values import ValueHoldingToken
+from dxbc.v2.values import *
+from dxbc.v2.values.tokens import ValueHoldingToken
 
 
 class Instruction:
@@ -132,15 +134,3 @@ class MADDInstruction(ArithmeticInstruction):
 class DiscardNZInstruction(ResultInstruction):
     def disassemble(self):
         return "if ({} != 0) {{ discard; }}".format(self.result_arg)
-
-
-def extract_instruction_data(tokens):
-    tokens = list(filter(lambda x: isinstance(x, (InstructionNameToken, ValueHoldingToken)), tokens))
-    instr_tokens = list(filter(lambda x: isinstance(x, InstructionNameToken), tokens))
-    arg_tokens = list(filter(lambda x: isinstance(x, ValueHoldingToken), tokens))
-    arg_exprs = list(map(lambda x: x.value, arg_tokens))
-
-    if len(instr_tokens) != 1:
-        raise ValueError("Expected 1 InstructionNameToken, got {}".format(len(instr_tokens)))
-
-    return instr_tokens[0].str_data, arg_exprs

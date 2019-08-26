@@ -48,7 +48,7 @@ instruction_map = {
     "dp2": makeFuncInstruction("dot", trunc_len=2),
     "dp3": makeFuncInstruction("dot", trunc_len=3),
 
-    "bfi":BitfieldInsert,
+    "bfi": BitfieldInsert,
 
     "ret": ReturnInstruction
 }

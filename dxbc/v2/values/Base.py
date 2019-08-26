@@ -1,29 +1,8 @@
-from enum import IntEnum
-from typing import List, Type, Tuple
+from abc import ABC
+from typing import List, Tuple
 
 from dxbc.Errors import DXBCError
-
-
-class Untyped:
-    pass
-
-# Lists types from most permissive to least.
-# i.e. a float cannot be converted to an int without losing data, so it appears before int.
-type_hierarchy = [
-    float,
-    int,
-    hex,
-    Untyped,
-]
-
-
-def get_least_permissive_container_type(*types: [type]) -> type:
-    current_type = types[0]
-    for new_type in types[1:]:
-        for t in type_hierarchy:
-            if t in [new_type, current_type]:
-                current_type = t
-    return current_type
+from dxbc.v2.Types import get_least_permissive_container_type, ScalarType
 
 
 class Value:
@@ -32,11 +11,11 @@ class Value:
     """
 
     num_components: int
-    value_type: type
+    scalar_type: ScalarType
     negated: bool
     assignable: bool
 
-    def __init__(self, component_types: List[Type], negated: bool, assignable: bool):
+    def __init__(self, component_types: List[ScalarType], negated: bool, assignable: bool):
         """
         Inits the Value based on the types of each component.
         The type of the Value is the least permissive type that every
@@ -45,7 +24,7 @@ class Value:
         :param component_types: The types of each component.
         """
         self.num_components = len(component_types)
-        self.value_type = get_least_permissive_container_type(*component_types)
+        self.scalar_type = get_least_permissive_container_type(*component_types)
         self.negated = negated
         self.assignable = assignable
 
@@ -54,7 +33,7 @@ class Value:
             return False
 
         return (self.num_components == other.num_components
-                and self.value_type == other.value_type
+                and self.scalar_type == other.scalar_type
                 and self.negated == other.negated
                 and self.assignable == other.assignable)
 
@@ -63,14 +42,14 @@ class Value:
 
 
 class ScalarValueBase(Value):
-    def __init__(self, scalar_type: type, negated: bool, assignable: bool):
+    def __init__(self, scalar_type: ScalarType, negated: bool, assignable: bool):
         super().__init__([scalar_type], negated, assignable)
 
     def get_output_mask(self) -> Tuple[bool, bool, bool, bool]:
         return (True, False, False, False)
 
 
-class VectorValueBase(Value):
+class VectorValueBase(Value, ABC):
     scalar_values: List[ScalarValueBase]
 
     def __init__(self, scalar_values: List[ScalarValueBase], negated: bool):
@@ -81,7 +60,7 @@ class VectorValueBase(Value):
             raise DXBCError("Tried to make a Vector with >4 values")
         if len(scalar_values) < 2:
             raise DXBCError("Tried to make a Vector with <2 values")
-        super().__init__([x.value_type for x in scalar_values], negated, all([x.assignable for x in scalar_values]))
+        super().__init__([x.scalar_type for x in scalar_values], negated, all(x.assignable for x in scalar_values))
         self.scalar_values = scalar_values
 
     def __eq__(self, other):
@@ -89,12 +68,3 @@ class VectorValueBase(Value):
                 and self.scalar_values == other.scalar_values)
 
 
-class VectorComponent(IntEnum):
-    x = 0
-    y = 1
-    z = 2
-    w = 3
-    r = x
-    g = y
-    b = z
-    a = w

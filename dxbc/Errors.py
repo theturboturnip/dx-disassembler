@@ -8,3 +8,7 @@ class DXBCValueError(DXBCError):
 
 class DXBCTokenizeError(DXBCError):
     pass
+
+
+class DXBCInstructionDecodeError(DXBCError):
+    pass

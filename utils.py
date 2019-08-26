@@ -9,7 +9,7 @@ def list_str(l):
     return ", ".join([str(x) for x in l])
 
 
-def list_dict(d):
+def dict_str(d):
     return ", ".join(["{}: {}".format(str(k), str(v)) for (k, v) in d.items()])
 
 
@@ -41,7 +41,7 @@ def FirstPossibleOf(types: [Type], potential_errors: [Type[Exception]] = None):
 
             # At this point we know none of the types could be created
             error_string = "Failed creating any of [{}] with args=[{}], kwargs={{ {} }}:\n".format(
-                list_str(types), list_str(args), list_dict(kwargs)) + error_string
+                list_str(types), list_str(args), dict_str(kwargs)) + error_string
             raise DXBCError(error_string)
 
     return AnyType
