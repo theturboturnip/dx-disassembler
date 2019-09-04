@@ -18,7 +18,7 @@ class UnnamedVectorValue(VectorValueBase):
     def __repr__(self):
         return "UnnamedVectorValue {} {} {} r/w:{}".format(self.scalar_type.name(), self.negated, ", ".join(repr(x) for x in self.scalar_values), self.assignable)
 
-    def __str__(self):
+    def disassemble(self, type_length: int = -1):
         if all(x == self.scalar_values[0] for x in self.scalar_values):
             return "{}{}".format("-" if self.negated else "", self.scalar_values[0])
         return "{}{}{}({})".format("-" if self.negated else "", self.scalar_type.name(), self.num_components, ", ".join(str(x) for x in self.scalar_values))
@@ -61,7 +61,11 @@ class SwizzledVectorValue(VectorValueBase):
 
     def __repr__(self):
         return "{}{}.{}".format("-" if self.negated else "", self.vector_name, "".join([x.name for x in self.components]))
-    def __str__(self):
+
+    def disassemble(self, type_length: int = -1):
+        if type_length == self.num_components:
+            if all(x == i for i, x in enumerate(self.components)):
+                return "{}{}".format("-" if self.negated else "", self.vector_name)
         if all(x == self.components[0] for x in self.components):
             return "{}{}.{}".format("-" if self.negated else "", self.vector_name, self.components[0].name)
         return repr(self)

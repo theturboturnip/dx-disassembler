@@ -1,16 +1,12 @@
 from itertools import chain
-from typing import Mapping, Dict
 
 from dxbc.Errors import DXBCInstructionDecodeError
-from dxbc.Instruction import *
-from dxbc.InstructionMap import getInstructionType
 from dxbc.tokens import *
-from dxbc.v2.program.Functions import TruncateToLength, TruncateToOutput, makeTruncateToLength, ArgumentTruncation, \
-    NullTruncate, function_map, Function
+from dxbc.v2.program.Functions import TruncateToOutput, function_map, Function
 from dxbc.v2.program.State import ProgramState
 from dxbc.v2.program.Variables import *
 from dxbc.v2.values.Scalar import cast_scalar
-from dxbc.v2.values.Utils import map_scalar_values, get_type_string
+from dxbc.v2.values.Utils import get_type_string
 from dxbc.v2.values.tokens import ValueToken, ValueHoldingToken
 from utils import *
 import copy
@@ -85,15 +81,16 @@ def update_state(function: Function, input_vals: List[Value], output_value: Valu
             new_var_name = VarNameBase(f"vector_{total_vector_variables}")
             total_vector_variables += 1
             for (i, output_id) in enumerate(output_ids):
-                current_state.set(
+                current_state.set_scalar_map(
                     output_id,
                     SingleVectorComponent(new_var_name, VectorComponent(i), output_scalar_type, False),
                     output_scalar_type
                 )
+            current_state.set_vector_length(new_var_name, len(output_ids))
         else:
             new_var_name = VarNameBase(f"scalar_{total_scalar_variables}")
             total_scalar_variables += 1
-            current_state.set(output_ids[0], ScalarVariable(new_var_name, output_scalar_type, False),
+            current_state.set_scalar_map(output_ids[0], ScalarVariable(new_var_name, output_scalar_type, False),
                               output_scalar_type)
         return True
     return False
@@ -147,7 +144,12 @@ initial_state.update({
         "s0", "s1", "s2",
     ]
 })
-current_state: ProgramState = ProgramState(initial_state)
+initial_vec_state = {
+    VarNameBase(name): 4
+    for name, scalar_type in vector_constants.items()
+    if scalar_type == ScalarType.Float
+}
+current_state: ProgramState = ProgramState(initial_state, initial_vec_state)
 state_stack = []
 registers = [f"r{i}" for i in range(0, 7)]
 #argument_truncations = {
@@ -237,9 +239,10 @@ while remaining:
             remapped_output = apply_remap(output_value, current_state)
             if new_variable:
                 disassembly += f"{get_type_string(remapped_output.scalar_type, remapped_output.num_components)} "
-            disassembly += f"{str(remapped_output)} = "
+            vec_length = current_state.get_vector_length(remapped_output)
+            disassembly += f"{remapped_output.disassemble(vec_length)} = "
 
-        disassembly += f"{function.disassemble_call(remapped_input)};"
+        disassembly += f"{function.disassemble_call(remapped_input, current_state)};"
         print (disassembly)
 
         #print(f"{apply_remap(output_value, current_state)} = {function.name} {list_str(remapped_input)}")
@@ -251,9 +254,4 @@ while remaining:
         break
 
     current_tick += 1
-#try:
-    #    instr_name, args_exprs = extract_instruction_data(tokens)
-    #    instr = getInstructionType(instr_name)(instr_name, args_exprs)
-    #except ValueError as e:
-    #    reraise(e, "{} encountered when disassembling " + list_str(tokens))
-    #print(instr.disassemble())
+

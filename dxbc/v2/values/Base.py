@@ -40,6 +40,12 @@ class Value:
     def get_output_mask(self) -> Tuple[bool, bool, bool, bool]:
         raise NotImplementedError()
 
+    def disassemble(self, type_length: int = -1) -> str:
+        raise NotImplementedError()
+
+    def __str__(self):
+        return self.disassemble()
+
 
 class ScalarValueBase(Value):
     def __init__(self, scalar_type: ScalarType, negated: bool, assignable: bool):

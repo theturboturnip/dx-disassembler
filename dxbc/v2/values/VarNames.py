@@ -5,6 +5,9 @@ class VarNameBase:
         super().__init__()
         self.name = name
 
+    def as_base(self) -> 'VarNameBase':
+        return self
+
     def disassemble(self) -> str:
         return self.name
 
@@ -34,11 +37,14 @@ class IndexedVarName(VarNameBase):
     def disassemble(self) -> str:
         return "{}[{}]".format(self.name, " + ".join([str(x) for x in self.indices]))
 
+    def as_base(self):
+        return VarNameBase(self.name)
+
     def __repr__(self):
         return f"IndexedVarName {self.name} {self.indices}"
 
     def __eq__(self, other):
-        return (super().__eq__(other)
-                and self.indices == other.indices)
+        return (super().__eq__(other))
+                #and self.indices == other.indices)
 
 

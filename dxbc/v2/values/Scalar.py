@@ -58,7 +58,7 @@ class ImmediateScalar(ScalarValueBase):
     def __repr__(self):
         return f"ImmediateScalar {self.scalar_type} {self.negated} {self.value}"
 
-    def __str__(self):
+    def disassemble(self, type_length: int = -1):
         return "{}{}".format("-" if self.negated else "", self.scalar_type.format_as_string(self.value))
 
 
@@ -76,7 +76,7 @@ class ScalarVariable(ScalarValueBase):
     def __repr__(self):
         return f"ScalarVariable {self.scalar_type} {self.negated} {self.scalar_name} w:{self.assignable} d:{self.num_components}"
 
-    def __str__(self):
+    def disassemble(self, type_length: int = -1):
         return "{}{}".format("-" if self.negated else "", self.scalar_name)
 
 
@@ -98,5 +98,5 @@ class SingleVectorComponent(ScalarValueBase):
     def __repr__(self):
         return f"SingleVectorComponent {self.scalar_type} {self.negated} {self.vector_name}.{self.component_name.name}"
 
-    def __str__(self):
+    def disassemble(self, type_length: int = -1):
         return "{}{}.{}".format("-" if self.negated else "", self.vector_name, self.component_name.name)
