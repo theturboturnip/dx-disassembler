@@ -1,7 +1,8 @@
 from typing import Dict, Optional
 
 from dxbc.v2.Types import ScalarType
-from dxbc.v2.program.Variables import ScalarID, VariableState, ScalarValueBase, VarNameBase, SwizzledVectorValue, Value
+from dxbc.v2.program.Variables import *
+from dxbc.v2.values.Scalar import cast_scalar
 from utils import dict_str
 
 
@@ -36,5 +37,32 @@ class ProgramState:
     def set_scalar_map(self, scalar_id: ScalarID, name: ScalarValueBase, scalar_type: ScalarType):
         self.state_map[scalar_id] = VariableState(name, scalar_type)
 
+    def set_vector_map(self, var_name: VarNameBase, output_ids: List[ScalarID], output_scalar_type: ScalarType):
+        for (i, output_id) in enumerate(output_ids):
+            self.set_scalar_map(
+                output_id,
+                SingleVectorComponent(var_name, VectorComponent(i), output_scalar_type, False),
+                output_scalar_type
+            )
+        self.set_vector_length(var_name, len(output_ids))
+
     def set_vector_length(self, name: VarNameBase, count: int):
         self.vector_map[name] = count
+
+    def infer_and_cast_type(self, value: Value) -> Value:
+        if value.scalar_type is not ScalarType.Untyped:
+            return value
+
+        if isinstance(value, ScalarValueBase):
+            val_id = ScalarID(value)
+            variable_type = self.get_type(val_id, default=None)
+            if not variable_type:
+                raise DXBCError(f"Variable for value {value} has no state, can't infer type")
+            if variable_type == ScalarType.Untyped:
+                # This type has been set to untyped, assume there's a reason and just pass it through
+                # This is for things like Samplers and Textures which we don't care about for typing purposes
+                return value
+            new_type = variable_type
+            return cast_scalar(value, new_type)
+        elif isinstance(value, VectorValueBase):
+            return VectorValue([self.infer_and_cast_type(c) for c in value.scalar_values], value.negated)

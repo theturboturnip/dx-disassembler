@@ -28,16 +28,22 @@ class ArgumentTruncation:
         """
         raise NotImplementedError()
 
-class NullTruncate(ArgumentTruncation):
+class NonNullArgumentTruncation(ArgumentTruncation, ABC):
+    """
+    Inherited from by all implemented argument truncations.
+    """
+    pass
+
+class NullTruncate(NonNullArgumentTruncation):
     def truncate_args(self, input_args, output_arg):
         return input_args
 
-class TruncateToOutput(ArgumentTruncation):
+class TruncateToOutput(NonNullArgumentTruncation):
     def truncate_args(self, input_args, output_arg):
         output_mask = output_arg.get_output_mask()
         return [mask_components(arg, output_mask) for arg in input_args]
 
-class TruncateToLength(ArgumentTruncation, ABC):
+class TruncateToLength(NonNullArgumentTruncation, ABC):
     pass
 
 def makeTruncateToLength(length: int):
@@ -46,7 +52,7 @@ def makeTruncateToLength(length: int):
             return [trim_components(arg, length) for arg in input_args]
     return TruncateToLength_Impl
 
-class TextureArgumentTruncation(ArgumentTruncation):
+class TextureArgumentTruncation(NonNullArgumentTruncation):
     def truncate_args(self, input_args: List[GenericValue], output_arg: GenericValue):
         return [
             trim_components(input_args[0], 2),
@@ -54,13 +60,13 @@ class TextureArgumentTruncation(ArgumentTruncation):
             trim_components(input_args[2], 1),
         ]
 
-class Function:
+class Function(ArgumentTruncation):
     name: str
     input_types: List[ArgumentType]
     output_type: Optional[ArgumentType]
 
     def __init__(self, name, input_types, output_type):
-        if not isinstance(self, ArgumentTruncation):
+        if not isinstance(self, NonNullArgumentTruncation):
             raise DXBCError("Function must have some form of argument truncation")
         self.name = name
         self.input_types = input_types
