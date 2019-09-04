@@ -44,7 +44,7 @@ class IndexedVarName(VarNameBase):
         return f"IndexedVarName {self.name} {self.indices}"
 
     def __eq__(self, other):
-        return (super().__eq__(other))
-                #and self.indices == other.indices)
+        return (super().__eq__(other)
+                and self.indices == other.indices)
 
 
