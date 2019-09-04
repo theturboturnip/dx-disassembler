@@ -5,7 +5,7 @@ from dxbc.tokens.Base import Token, EatReturnType
 from utils import list_str
 
 
-def CompoundToken(*token_types: List[Type[Token]]):
+def CompoundToken(*token_types: Type[Token]):
     class CompoundToken_Impl(Token):
         @staticmethod
         def eat(str_data) -> EatReturnType:
