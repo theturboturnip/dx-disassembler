@@ -16,7 +16,10 @@ def dict_str(d):
 def reraise(e, extra):
     #err = copy(e)
     #err.message = extra.format(str(e))
-    raise type(e)(extra.format(str(e))).with_traceback(sys.exc_info()[2])
+    if len(sys.exc_info()) >= 3:
+        raise type(e)(extra.format(str(e))).with_traceback(sys.exc_info()[2])
+    else:
+        raise type(e)(extra.format(str(e)))
 
 
 def FirstPossibleOf(types: [Type], potential_errors: [Type[Exception]] = None):

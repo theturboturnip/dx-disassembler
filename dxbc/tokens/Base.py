@@ -17,9 +17,16 @@ class Token:
 
 EatReturnType = Tuple[List[Token], str]
 
-def RegexToken(regex_str: str, name:str):
+def RegexToken(regex_str: str, name:str = None):
+    if name is None:
+        name = f"RegexStr({regex_str})"
+    else:
+        name = f"{name}({regex_str})"
     # Create the type without the eat() function, because it has to reference this type later
-    regex_token_type = type("{}_Impl".format(name), (Token,), {})
+    regex_token_type = type(f"{name}_Impl", (Token,), {
+        "__repr__": lambda self: f"{name}",
+    })
+
     @staticmethod
     def eat(str_data) -> EatReturnType:
         match = re.match(regex_str, str_data)

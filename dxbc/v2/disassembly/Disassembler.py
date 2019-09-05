@@ -3,7 +3,7 @@ from itertools import chain
 
 from dxbc.v2.program.Functions import *
 from dxbc.v2.program.State import ProgramState
-from dxbc.v2.disassembly.Tokenizer import Tokenizer
+from dxbc.v2.disassembly.Tokenizer import Tokenizer, INSTRUCTION_TOKEN
 from dxbc.v2.program.Variables import *
 from dxbc.v2.values.Utils import get_type_string
 from utils import *
@@ -95,8 +95,10 @@ class Disassembler:
         current_tick: int = 0
         current_state: ProgramState = self.initial_state
 
-        while remaining:
-            (instr_name, arg_vals), remaining = self.tokenizer.next_instruction(remaining)
+        tokens, remaining = self.tokenizer.tokenize_file(remaining)
+
+        for instr_tokens in [x.tokens for x in tokens if isinstance(x, INSTRUCTION_TOKEN)]:
+            (instr_name, arg_vals) = self.tokenizer.extract_instruction_data(instr_tokens)
 
             previous_state = current_state
             current_state = current_state.copy()

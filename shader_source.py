@@ -1,4 +1,34 @@
 ps_instruction_str = """
+ps_5_0
+      dcl_globalFlags refactoringAllowed
+      dcl_immediateConstantBuffer {
+			{ 0.062745, 0.936275, 0, 0}, 
+			{ 0.562745, 0.437255, 0, 0}, 
+			{ 0.811765, 0.190196, 0, 0}, 
+			{ 0.311765, 0.690196, 0, 0} }
+      dcl_constantbuffer cb12[7], immediateIndexed
+      dcl_constantbuffer cb13[1], immediateIndexed
+      dcl_constantbuffer cb6[3], immediateIndexed
+      dcl_constantbuffer cb7[11], immediateIndexed
+      dcl_constantbuffer cb5[2], immediateIndexed
+      dcl_sampler s0, mode_default
+      dcl_sampler s1, mode_default
+      dcl_sampler s2, mode_default
+      dcl_resource_texture2d (float,float,float,float) t0
+      dcl_resource_texture2d (float,float,float,float) t1
+      dcl_resource_texture2d (float,float,float,float) t2
+      dcl_input_ps linearCentroid v0.xy
+      dcl_input_ps linearCentroid v1.w
+      dcl_input_ps linearCentroid v2.xyz
+      dcl_input_ps linearCentroid v3.xyzw
+      dcl_input_ps_siv v4.xy, position
+      dcl_input vCoverageMask
+      dcl_output o0.xyzw
+      dcl_output o1.xyzw
+      dcl_output o2.xyzw
+      dcl_output o3.xyzw
+      dcl_output oMask
+      dcl_temps 6
    0: mul r0.x, cb6[0].w, cb5[1].w
    1: sample_indexable(texture2d)(float,float,float,float) r1.xyzw, v0.xyxx, t0.xyzw, s0
    2: mad r0.y, r1.w, r0.x, l(-0.062745)
