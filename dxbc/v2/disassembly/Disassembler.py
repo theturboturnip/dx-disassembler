@@ -1,3 +1,4 @@
+import collections
 from itertools import chain
 
 from dxbc.v2.program.Functions import *
@@ -37,16 +38,16 @@ vector_constants = {
 scalar_values = {
     "oMask": ScalarType.Uint
 }
-initial_state = {
+initial_scalar_types = {
     ScalarID(VarNameBase(name), comp): VariableState(None, t)
     for comp in VectorComponent
     for (name, t) in vector_constants.items()
 }
-initial_state.update({
+initial_scalar_types.update({
     ScalarID(VarNameBase(name)): VariableState(None, t)
     for (name, t) in scalar_values.items()
 })
-initial_state.update({
+initial_scalar_types.update({
     ScalarID(VarNameBase(name)): VariableState(None, ScalarType.Untyped)
     for name in [
         "s0", "s1", "s2",
@@ -60,18 +61,39 @@ initial_vec_state = {
 state_stack = []
 registers = [f"r{i}" for i in range(0, 7)]
 
+Action = collections.namedtuple('Action', 'func remapped_in remapped_out new_variable new_state')
+
+
 class Disassembler:
-
-
     total_scalar_variables = 0
     total_vector_variables = 0
 
+    instructions: List[Tuple[str, List[Value]]]
+    initial_state: ProgramState
+    actions: List[Action] = []
+
     def __init__(self):
         self.tokenizer = Tokenizer()
+        self.instructions = []
+        self.initial_state = ProgramState(initial_scalar_types, initial_vec_state)
+
+    def get_function_contents_hlsl(self, line_prefix: str = ""):
+        function_contents = ""
+        for action in self.actions:
+            line_disassembly = f"{line_prefix}"
+            if action.remapped_out:
+                if action.new_variable:
+                    line_disassembly += f"{get_type_string(action.remapped_out.scalar_type, action.remapped_out.num_components)} "
+                vec_length = action.new_state.get_vector_length(action.remapped_out)
+                line_disassembly += f"{action.remapped_out.disassemble(vec_length)} = "
+
+            line_disassembly += f"{action.func.disassemble_call(action.remapped_in, action.new_state)};\n"
+            function_contents += line_disassembly
+        return function_contents
 
     def disassemble_program_contents(self, remaining: str):
         current_tick: int = 0
-        current_state: ProgramState = ProgramState(initial_state, initial_vec_state)
+        current_state: ProgramState = self.initial_state
 
         while remaining:
             (instr_name, arg_vals), remaining = self.tokenizer.next_instruction(remaining)
@@ -89,7 +111,6 @@ class Disassembler:
                 else:
                     input_vals = arg_vals[1:]
                     output_value = arg_vals[0]
-                    # output_value = map_scalar_values(lambda s: cast_scalar(s, function.output_type), output_value)
 
                 # Validate input and infer types
                 input_vals = [current_state.infer_and_cast_type(x) for x in input_vals]
@@ -115,21 +136,16 @@ class Disassembler:
 
                 remapped_input = [apply_remap(x, previous_state) for x in input_vals]
 
-                disassembly = ""
+                remapped_output = None
                 if output_value:
                     remapped_output = apply_remap(output_value, current_state)
-                    if new_variable:
-                        disassembly += f"{get_type_string(remapped_output.scalar_type, remapped_output.num_components)} "
-                    vec_length = current_state.get_vector_length(remapped_output)
-                    disassembly += f"{remapped_output.disassemble(vec_length)} = "
 
-                disassembly += f"{function.disassemble_call(remapped_input, current_state)};"
-                print(disassembly)
+                self.actions.append(Action(func=function,
+                                           remapped_in=remapped_input,
+                                           remapped_out=remapped_output,
+                                           new_variable=new_variable,
+                                           new_state=current_state))
 
-                # print(f"{apply_remap(output_value, current_state)} = {function.name} {list_str(remapped_input)}")
-                # print(f"\tinput types: {list_str(x.scalar_type for x in input_vals)}")
-                # print(f"\t{instr_name} {list_str(input_vals)} -> {output_value}")
-                # print(f"\t{output_deps}")
             except DXBCError as e:
                 reraise(e, f"{{}} encountered when executing {instr_name} {arg_vals}")
                 break
