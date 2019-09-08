@@ -16,7 +16,8 @@ def CompoundToken(*token_types: Type[Token]):
                     new_token_list, remaining_data = token_type.eat(remaining_data)
                     tokens += new_token_list
                 except DXBCError as e:
-                    reraise(e, f"Error extracting token {i} from {token_types}:\n\t{{}}")
+                    token_str = str(token_types).replace("{", "{{").replace("}", "}}")
+                    reraise(e, f"Error extracting token {i} from {token_str}:\n\t{{}}")
             return tokens, remaining_data
     return CompoundToken_Impl
 
@@ -79,7 +80,8 @@ def SequenceToken(*token_type_list: List[Type[Token]]):
     # Create the type without the eat() function, because it has to reference this type later
     sequence_base_token_type = type("SequenceToken_Impl", (Token,), {
         "__init__": SequenceToken_init,
-        "__repr__": lambda self: f"<SequenceToken_Impl: {self.tokens}>"
+        "__repr__": lambda self: f"<SequenceToken_Impl: {self.tokens}>",
+        "token_type_list": token_type_list
     })
 
     ct_eat = CompoundToken(*token_type_list).eat

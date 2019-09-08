@@ -1,3 +1,4 @@
+from enum import Enum, IntEnum
 from typing import cast
 
 from dxbc.Errors import DXBCInstructionDecodeError, DXBCError
@@ -29,29 +30,59 @@ INSTRUCTION_TOKEN = SequenceToken(
 
 PS_SHADER_START_TOKEN = RegexToken("ps_\d_\d", "PS_SHADER_START_TOKEN")
 
-SHADER_START_TOKEN = FirstOfTokens(PS_SHADER_START_TOKEN)
+SHADER_START_TOKEN = SequenceToken(FirstOfTokens(PS_SHADER_START_TOKEN))
 
+GLOBAL_FLAGS_TOKEN = RegexToken(r"globalFlags")
+IMMEDIATE_BUFFER_TOKEN = SequenceToken(
+    RegexToken(r"immediateConstantBuffer"), WhitespaceToken, RegexToken(r"\{[\s\S]+? \}")
+)
+CONSTANT_BUFFER_TOKEN = RegexToken(r"constantbuffer")
+SAMPLER_TOKEN = RegexToken(r"sampler")
+TEXTURE_TOKEN = RegexToken(r"resource_texture2d \(float,float,float,float\)")
 TYPED_PS_INPUT = SequenceToken(
     RegexToken(r"input_ps "), RegexToken(r"linearCentroid")
 )
+UNTYPED_INPUT = RegexToken(r"input(_ps_siv)?")
+OUTPUT = RegexToken(r"output")
+REGISTER_COUNT = RegexToken(r"temps")
 
-DECLARATION_START_TOKEN = CT(WhitespaceToken, RegexToken("dcl_", "DeclToken"))
-DECLARATION_NAME_TOKEN = FirstOfTokens(
-    RegexToken(r"globalFlags"),
-    RegexToken(r"immediateConstantBuffer\s+\{[\s\S]+? \}"),
-    RegexToken(r"constantbuffer"),
-    RegexToken(r"sampler"),
-    RegexToken(r"resource_texture2d \(float,float,float,float\)"),
+class NameToken(IntEnum):
+    GlobalFlags = 0,
+    ImmediateBufferToken = 1,
+    ConstantBufferToken = 2,
+    SamplerToken = 3,
+    TextureToken = 4,
+    TypedPSInput = 5,
+    UntypedInput = 6,
+    Output = 7,
+    RegisterCount = 8
+
+    def to_type(self) -> Type[Token]:
+        return NAME_TOKENS_TYPE_LIST[self.value]
+
+    @staticmethod
+    def from_type(t: Type[Token]) -> 'NameToken':
+        return NameToken(NAME_TOKENS_TYPE_LIST.index(t))
+
+NAME_TOKENS_TYPE_LIST = [
+    GLOBAL_FLAGS_TOKEN,
+    IMMEDIATE_BUFFER_TOKEN,
+    CONSTANT_BUFFER_TOKEN,
+    SAMPLER_TOKEN,
+    TEXTURE_TOKEN,
     TYPED_PS_INPUT,
-    RegexToken(r"input(_ps_siv)?"),
-    RegexToken(r"output"),
-    RegexToken(r"temps"),
-)
-FULL_DECLARATION_TOKEN = SequenceToken(
+    UNTYPED_INPUT,
+    OUTPUT,
+    REGISTER_COUNT
+]
+
+DECLARATION_START_TOKEN = SequenceToken(WhitespaceToken, RegexToken("dcl_", "DeclToken"))
+DECLARATION_NAME_TOKEN = FirstOfTokens(*NAME_TOKENS_TYPE_LIST)
+DECLARATION_TOKEN = SequenceToken(
     DECLARATION_START_TOKEN,
     DECLARATION_NAME_TOKEN,
     RegexToken(r"[ ]*", "WhitespaceNoNewlineToken"),
-    ARGUMENTS_TOKEN,
+    SequenceToken(ARGUMENTS_TOKEN),
     NewlineToken
 )
 
@@ -79,7 +110,7 @@ def make_file_token(*token_types: Type[Token]):
 FILE_TOKEN = make_file_token(
     OT(WhitespaceToken),
     SHADER_START_TOKEN, NewlineToken,
-    RepeatingToken(FULL_DECLARATION_TOKEN, 3),
+    RepeatingToken(DECLARATION_TOKEN, 3),
     RepeatingToken(INSTRUCTION_TOKEN)
 )
 

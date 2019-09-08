@@ -3,7 +3,8 @@ from itertools import chain
 
 from dxbc.v2.program.Functions import *
 from dxbc.v2.program.State import ProgramState
-from dxbc.v2.disassembly.Tokenizer import Tokenizer, INSTRUCTION_TOKEN
+from dxbc.v2.disassembly.Tokenizer import Tokenizer, INSTRUCTION_TOKEN, NewlineToken, WhitespaceToken, \
+    SHADER_START_TOKEN, DECLARATION_TOKEN, NameToken
 from dxbc.v2.program.Variables import *
 from dxbc.v2.values.Utils import get_type_string
 from utils import *
@@ -76,6 +77,23 @@ class Disassembler:
         self.tokenizer = Tokenizer()
         self.instructions = []
         self.initial_state = ProgramState(initial_scalar_types, initial_vec_state)
+
+    def disassemble_file(self, file_contents: str):
+        tokens, remaining = self.tokenizer.tokenize_file(file_contents)
+        tokens = [x for x in tokens if not isinstance(x, (WhitespaceToken, NewlineToken))]
+        if len(tokens) == 0 or not isinstance(tokens[0], SHADER_START_TOKEN):
+            raise DXBCError("Expected SHADER_START_TOKEN at the beginning of the file")
+
+        declaration_tokens = [x for x in tokens if isinstance(x, DECLARATION_TOKEN)]
+        declaration_pairs = [(NameToken.from_type(type(x.tokens[1])), x) for x in declaration_tokens]
+        declaration_dict = {e: [x for x_e, x in declaration_pairs if x_e == e] for e in NameToken}
+
+        # TODO: Build initial state
+        for e in NameToken:
+            print(f"{e.name}: {[x.tokens[3].str_data for x in declaration_dict[e]]}")
+
+        #instruction_tokens = [x for x in tokens if isinstance(x, INSTRUCTION_TOKEN)]
+
 
     def get_function_contents_hlsl(self, line_prefix: str = ""):
         function_contents = ""
