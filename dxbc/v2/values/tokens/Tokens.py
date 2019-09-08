@@ -163,5 +163,4 @@ class UnnamedVectorValueToken(
             )
 
 
-ValueToken = FirstOfTokens(UnnamedVectorValueToken, SwizzledIndexedValueToken, SwizzledBasicNamedValueToken,
-                           ImmediateScalarValueToken)
+ValueToken = FirstOfTokens(ImmediateScalarValueToken, UnnamedVectorValueToken, SwizzledIndexedValueToken, SwizzledBasicNamedValueToken)

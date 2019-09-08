@@ -45,7 +45,7 @@ ps_5_0
   13: mov o0.w, r0.x
   14: and r0.y, l(0x00400000), cb13[0].x
   15: ine r0.y, r0.y, l(0)
-  16: dp3 r0.z, values.xyzx, cb12[6].xyzx
+  16: dp3 r0.z, v2.xyzx, cb12[6].xyzx
   17: lt r0.z, r0.z, l(0)
   18: movc r0.w, r0.z, l(282), l(266)
   19: and r1.x, l(6), cb7[8].w
@@ -82,9 +82,9 @@ ps_5_0
   50: rsq r1.y, r1.y
   51: mul r1.yzw, r1.yyyy, v3.xxyz
   52: mul r3.xyz, r0.yyyy, r1.yzwy
-  53: dp3 r0.y, values.xyzx, values.xyzx
+  53: dp3 r0.y, v2.xyzx, v2.xyzx
   54: rsq r0.y, r0.y
-  55: mul r4.xyz, r0.yyyy, values.xyzx
+  55: mul r4.xyz, r0.yyyy, v2.xyzx
   56: mul r5.xyz, r1.zwyz, r4.zxyz
   57: mad r5.xyz, r4.yzxy, r1.wyzw, -r5.xyzx
   58: mul r5.xyz, r5.xyzx, v3.wwww
