@@ -165,6 +165,8 @@ class Disassembler:
                 component_count = 4 # Pad to pow2
 
             initial_types[base_name] = ScalarType.Uint if "Mask" in base_name.name else ScalarType.Float
+            if base_name.name == "vCoverageMask":
+                component_count = 4
             if component_count > 1:
                 initial_vector_state[base_name] = component_count
             else:
