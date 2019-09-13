@@ -69,6 +69,16 @@ class DXBCVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by DXBCParser#single_component.
+    def visitSingle_component(self, ctx:DXBCParser.Single_componentContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DXBCParser#swizzle_components.
+    def visitSwizzle_components(self, ctx:DXBCParser.Swizzle_componentsContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by DXBCParser#single_vector_component.
     def visitSingle_vector_component(self, ctx:DXBCParser.Single_vector_componentContext):
         return self.visitChildren(ctx)

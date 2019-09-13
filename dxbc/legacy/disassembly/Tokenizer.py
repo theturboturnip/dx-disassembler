@@ -4,7 +4,7 @@ from dxbc.Errors import DXBCInstructionDecodeError
 from dxbc.legacy.tokens import RegexToken, SequenceToken, WhitespaceToken, FirstOfTokens, NewlineToken
 from dxbc.legacy.tokens.Lang import *
 from dxbc.legacy.value_tokens.Tokens import *
-from dxbc.v2.program.DeclName import DeclName
+from dxbc.v2.program.decl_name import DeclName
 from dxbc.v2.values import Value
 from dxbc.legacy.tokens import *
 from utils import reraise

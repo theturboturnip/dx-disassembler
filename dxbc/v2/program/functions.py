@@ -4,12 +4,12 @@ from typing import Union, List, Optional, Type, Tuple, Dict
 
 from dxbc.Errors import DXBCError
 from dxbc.v2.Types import VectorType, ScalarType, get_least_permissive_container_type
-from dxbc.v2.program import State
-from dxbc.v2.program.State import ExecutionState
+from dxbc.v2.program import state
+from dxbc.v2.program.state import ExecutionState
 from dxbc.v2.values import ScalarValueBase, Value, VectorValueBase, mask_components, trim_components, \
     SwizzledVectorValue
-from dxbc.v2.values.Scalar import cast_scalar, reinterpret_scalar, SingleVectorComponent
-from dxbc.v2.values.Utils import map_scalar_values, get_type_string
+from dxbc.v2.values.scalar import cast_scalar, reinterpret_scalar, SingleVectorComponent
+from dxbc.v2.values.utils import map_scalar_values, get_type_string
 
 GenericValue = Value
 GenericValueType = Union[ScalarType, VectorType]

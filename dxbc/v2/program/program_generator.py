@@ -1,14 +1,14 @@
 import collections
 from copy import copy
 from itertools import chain
-from typing import Dict, List, Tuple, Sequence, Mapping
+from typing import Dict, List, Tuple, Sequence, Mapping, Optional
 
 from dxbc.v2.Types import ScalarType
-from dxbc.v2.program.Action import Action
-from dxbc.v2.program.DeclName import DeclName
-from dxbc.v2.program.Functions import Function, TruncateToOutput, function_map
-from dxbc.v2.program.Program import Program
-from dxbc.v2.program.State import ExecutionState, get_scalar_ids, DXBCError, ScalarID, \
+from dxbc.v2.program.action import Action
+from dxbc.v2.program.decl_name import DeclName, DeclStorage
+from dxbc.v2.program.functions import Function, TruncateToOutput, function_map
+from dxbc.v2.program.program import Program
+from dxbc.v2.program.state import ExecutionState, get_scalar_ids, DXBCError, ScalarID, \
     VectorComponent, VariableState
 from dxbc.v2.values import *
 from utils import reraise
@@ -20,15 +20,9 @@ class ProgramGenerator:
     instructions: List[Tuple[str, List[Value]]] = []
     registers: List[str] = []
 
-    def __init__(self):
-        pass
-
-    def build_program(self, decl_data: Mapping[DeclName, List[List[Value]]],
+    def build_program(self, decl_data: DeclStorage,
                       instr_data: Sequence[Tuple[str, List[Value]]]) -> 'Program':
-        initial_state, self.registers = self.generate_initial_state(decl_data)
-
-        # for e in NameToken:
-        #    print(f"{e.name}: {[x.value_tokens[3].str_data for x in declaration_dict[e]]}")
+        initial_state, self.registers, icb_contents = self.generate_initial_state(decl_data)
 
         current_tick: int = 0
         current_state: ExecutionState = initial_state
@@ -91,50 +85,53 @@ class ProgramGenerator:
 
             current_tick += 1
 
-        return Program(initial_state, actions)
+        return Program(initial_state, actions, icb_contents)
 
     @staticmethod
-    def generate_initial_state(decl_data: Mapping[DeclName, List[List[Value]]]) -> Tuple[ExecutionState, List[str]]:
+    def generate_initial_state(decl_data: DeclStorage) -> Tuple[ExecutionState, List[str], str]:
         initial_types: Dict[VarNameBase, ScalarType] = {}
         initial_vector_state: Dict[VarNameBase, int] = {}
         scalar_variable_names: List[VarNameBase] = []
+
+        icb_contents = None
 
         for x in decl_data[DeclName.ImmediateBufferToken]:
             # TODO: Assume immediate constant buffer is float4x4
             initial_types[VarNameBase("icb")] = ScalarType.Float
             initial_vector_state[VarNameBase("icb")] = 4
+            icb_contents = x.str_data
             break  # Only expect one
 
-        for arg_tokens in decl_data[DeclName.ConstantBufferToken]:
-            if (len(arg_tokens) == 0
-                    or not isinstance(arg_tokens[0], ScalarVariable)
-                    or not isinstance(arg_tokens[0].scalar_name, IndexedVarName)):
+        for arg_values in decl_data[DeclName.ConstantBufferToken]:
+            if (len(arg_values) == 0
+                    or not isinstance(arg_values[0], ScalarVariable)
+                    or not isinstance(arg_values[0].scalar_name, IndexedVarName)):
                 raise DXBCError(
-                    f"Expected constant buffer token to be of the form 'name[length]', got '{arg_tokens}'")
-            base_name = arg_tokens[0].scalar_name.as_base()
+                    f"Expected constant buffer token to be of the form 'name[length]', got '{arg_values}'")
+            base_name = arg_values[0].scalar_name.as_base()
             initial_types[base_name] = ScalarType.Float
             initial_vector_state[base_name] = 4
 
-        for arg_tokens in (decl_data[DeclName.SamplerToken] + decl_data[DeclName.TextureToken]):
-            if (len(arg_tokens) == 0
-                    or not isinstance(arg_tokens[0], ScalarVariable)
-                    or not type(arg_tokens[0].scalar_name) == VarNameBase):
+        for arg_values in (decl_data[DeclName.SamplerToken] + decl_data[DeclName.TextureToken]):
+            if (len(arg_values) == 0
+                    or not isinstance(arg_values[0], ScalarVariable)
+                    or not type(arg_values[0].scalar_name) == VarNameBase):
                 raise DXBCError(
-                    f"Expected texture/sampler token to be of the form 'nameN', got '{arg_tokens}'")
-            base_name = arg_tokens[0].scalar_name
+                    f"Expected texture/sampler token to be of the form 'nameN', got '{arg_values}'")
+            base_name = arg_values[0].scalar_name
             initial_types[base_name] = ScalarType.Untyped
             if "t" in base_name.name:
                 initial_vector_state[base_name] = 4  # Textures are accessed as vectors in assembly
             else:
                 scalar_variable_names.append(base_name)
 
-        for arg_tokens in (decl_data[DeclName.TypedPSInput]
+        for arg_values in (decl_data[DeclName.TypedPSInput]
                            + decl_data[DeclName.UntypedInput]
                            + decl_data[DeclName.Output]):
-            if len(arg_tokens) == 0:
+            if len(arg_values) == 0:
                 raise DXBCError(
-                    f"Expected argument after input/output declaration, got '{arg_tokens}'")
-            variable_value = arg_tokens[0]
+                    f"Expected argument after input/output declaration, got '{arg_values}'")
+            variable_value = arg_values[-1]
 
             base_name: VarNameBase
             if isinstance(variable_value, ScalarVariable):
@@ -174,20 +171,20 @@ class ProgramGenerator:
         initial_state = ExecutionState(initial_scalar_types, initial_vector_state)
 
         registers = []
-        for arg_tokens in decl_data[DeclName.RegisterCount]:
-            if (len(arg_tokens) == 0
-                    or not isinstance(arg_tokens[0], ImmediateScalar)):
-                print(arg_tokens)
+        for arg_values in decl_data[DeclName.RegisterCount]:
+            if (len(arg_values) == 0
+                    or not isinstance(arg_values[0], ImmediateScalar)):
+                print(arg_values)
                 raise DXBCError(
-                    f"Expected register count to be an immediate, got '{arg_tokens}'")
-            register_count = arg_tokens[0].value
+                    f"Expected register count to be an immediate, got '{arg_values}'")
+            register_count = arg_values[0].value
             registers = [f"r{i}" for i in range(0, register_count)]
             break
 
         # if not registers:
         #    raise DXBCError("Expected RegisterCount declaration")
 
-        return initial_state, registers
+        return initial_state, registers, icb_contents
 
     def update_state(self, function: Function, input_vals: List[Value], output_value: Value,
                      current_state: ExecutionState):

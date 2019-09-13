@@ -2,10 +2,10 @@ from collections import Mapping
 
 from dxbc.legacy.disassembly.Tokenizer import *
 from dxbc.legacy.tokens import *
-from dxbc.v2.program.Program import Program
-from dxbc.v2.program.ProgramGenerator import ProgramGenerator
-from dxbc.v2.program.Functions import *
-from dxbc.v2.program.Variables import *
+from dxbc.v2.program.program import Program
+from dxbc.v2.program.program_generator import ProgramGenerator
+from dxbc.v2.program.functions import *
+from dxbc.v2.program.variables import *
 from utils import *
 
 class Disassembler:

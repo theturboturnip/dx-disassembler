@@ -1,6 +1,6 @@
 grammar DXBC;
 
-fragment COMPONENT: 'x' | 'y' | 'z' | 'w';
+COMPONENT: 'x' | 'y' | 'z' | 'w';
 fragment DIGIT: '0'..'9';
 fragment HEXDIGIT: DIGIT | 'a'..'f' | 'A'..'F';
 fragment ALPHA: 'a'..'z' | 'A'..'Z';
@@ -23,12 +23,12 @@ COMMA_SEP_NEWLINE: COMMA_SEP NEWLINE;
 
 SHADER_TAG: 'ps_' DIGIT '_' DIGIT;
 
+COMPONENT_STR: COMPONENT+;
 
 DECL_NAME: 'dcl_' ID;
 ID: ALPHA ALPHANUM+;
 INSTRUCTION_START: DIGIT+ ':';
-SINGLE_COMPONENT: '.' COMPONENT;
-SWIZZLE_COMPONENT: '.' COMPONENT+;
+DOT: '.';
 
 COMMA_SEP: ' '* ',' ' '*;
 
@@ -41,7 +41,7 @@ HEX_IMMEDIATE_SCALAR: '0x' HEXDIGIT+;
 INT_IMMEDIATE_SCALAR: DIGIT+;
 FLOAT_IMMEDIATE_SCALAR: DIGIT+ '.' DIGIT+;
 
-dxbc_file: shader_name NEWLINE declarations NEWLINE instructions EOF;
+dxbc_file: (NEWLINE | WS)* shader_name NEWLINE declarations NEWLINE instructions EOF;
 
 shader_name: SHADER_TAG;
 
@@ -66,21 +66,24 @@ component_value: (PLUS_OP | SUB_OP)? scalar_value;
 
 immediate_scalar: HEX_IMMEDIATE_SCALAR | FLOAT_IMMEDIATE_SCALAR | INT_IMMEDIATE_SCALAR;
 
-single_vector_component: variable_name SINGLE_COMPONENT;
+single_component: DOT COMPONENT;
+swizzle_components: DOT COMPONENT_STR;
+
+single_vector_component: variable_name single_component;
 
 scalar_variable: variable_name;
 
 immediate_vector: VECTOR_OPEN component_value (COMMA_SEP component_value)* VECTOR_CLOSE;
 
-swizzled_vector_variable: variable_name SWIZZLE_COMPONENT;
+swizzled_vector_variable: variable_name swizzle_components;
 
 variable_name: ID array_index?;
-array_index: ARRAY_IDX_OPEN value+ ARRAY_IDX_CLOSE;
+array_index: ARRAY_IDX_OPEN component_value+ ARRAY_IDX_CLOSE;
 
 
 brace_list_or_val: brace_list | value;
 brace_list: BRACE_LIST_START brace_list_or_val ((COMMA_SEP | COMMA_SEP_NEWLINE) brace_list_or_val)+ BRACE_LIST_END;
 
 
-WS: (' ' | '\t' | '\r')+ -> skip ; // skip tabs and return carriages
+WS: [ \t\r]+ -> skip ; // skip tabs and return carriages
 NEWLINE: '\n';

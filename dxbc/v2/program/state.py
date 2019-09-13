@@ -1,8 +1,8 @@
 from typing import Dict, Optional
 
 from dxbc.v2.Types import ScalarType
-from dxbc.v2.program.Variables import *
-from dxbc.v2.values.Scalar import cast_scalar
+from dxbc.v2.program.variables import *
+from dxbc.v2.values.scalar import cast_scalar
 from utils import dict_str
 
 

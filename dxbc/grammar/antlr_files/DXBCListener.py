@@ -116,6 +116,24 @@ class DXBCListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by DXBCParser#single_component.
+    def enterSingle_component(self, ctx:DXBCParser.Single_componentContext):
+        pass
+
+    # Exit a parse tree produced by DXBCParser#single_component.
+    def exitSingle_component(self, ctx:DXBCParser.Single_componentContext):
+        pass
+
+
+    # Enter a parse tree produced by DXBCParser#swizzle_components.
+    def enterSwizzle_components(self, ctx:DXBCParser.Swizzle_componentsContext):
+        pass
+
+    # Exit a parse tree produced by DXBCParser#swizzle_components.
+    def exitSwizzle_components(self, ctx:DXBCParser.Swizzle_componentsContext):
+        pass
+
+
     # Enter a parse tree produced by DXBCParser#single_vector_component.
     def enterSingle_vector_component(self, ctx:DXBCParser.Single_vector_componentContext):
         pass

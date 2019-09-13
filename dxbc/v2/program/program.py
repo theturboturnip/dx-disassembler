@@ -1,8 +1,8 @@
 import collections
 
-from dxbc.v2.program.Action import Action
-from dxbc.v2.program.State import ExecutionState, List
-from dxbc.v2.values.Utils import get_type_string
+from dxbc.v2.program.action import Action
+from dxbc.v2.program.state import ExecutionState, List
+from dxbc.v2.values.utils import get_type_string
 
 class Program:
     initial_state: ExecutionState
@@ -10,7 +10,9 @@ class Program:
 
     registers: List[str] = []
 
-    def __init__(self, initial_state: ExecutionState, actions: List[Action]):
+    icb_contents: str
+
+    def __init__(self, initial_state: ExecutionState, actions: List[Action], icb_contents):
         self.initial_state = initial_state
         self.actions = actions
 
