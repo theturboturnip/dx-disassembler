@@ -6,4 +6,6 @@ disassembler = Disassembler()
 disassembler.disassemble_file(instruction_str)
 #disassembler.disassemble_program_contents(instruction_str)
 #print(disassembler.get_function_contents_hlsl(line_prefix="\t"))
-print(disassembler.get_disassembled_shader())
+print(disassembler.program.get_function_contents_hlsl())
+
+# all the player character's thoughts
