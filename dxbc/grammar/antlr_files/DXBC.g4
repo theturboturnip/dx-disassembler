@@ -21,8 +21,7 @@ ARRAY_IDX_CLOSE: ']';
 
 COMMA_SEP_NEWLINE: COMMA_SEP NEWLINE;
 
-SHADER_TAG: 'ps_';
-SHADER_VERSION: DIGIT '_' DIGIT;
+SHADER_TAG: 'ps_' DIGIT '_' DIGIT;
 
 
 DECL_NAME: 'dcl_' ID;
@@ -42,9 +41,9 @@ HEX_IMMEDIATE_SCALAR: '0x' HEXDIGIT+;
 INT_IMMEDIATE_SCALAR: DIGIT+;
 FLOAT_IMMEDIATE_SCALAR: DIGIT+ '.' DIGIT+;
 
-dxbc_file: shader_name declarations NEWLINE instructions EOF;
+dxbc_file: shader_name NEWLINE declarations NEWLINE instructions EOF;
 
-shader_name: ID NEWLINE;
+shader_name: SHADER_TAG;
 
 
 declarations: declaration (NEWLINE declaration)*;
@@ -54,7 +53,7 @@ declaration:
 	;
 
 instructions: instruction (NEWLINE instruction)*;
-instruction: 
+instruction:
 	INSTRUCTION_START instruction_name
 	| INSTRUCTION_START instruction_name value (COMMA_SEP value)*;
 	

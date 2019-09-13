@@ -1,4 +1,4 @@
-# Generated from .\DXBC.g4 by ANTLR 4.7.2
+# Generated from C:/Users/Samuel/PycharmProjects/DXBCDisassembler/dxbc/grammar/antlr_files\DXBC.g4 by ANTLR 4.7.2
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -8,11 +8,11 @@ import sys
 
 def serializedATN():
     with StringIO() as buf:
-        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\32")
+        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\31")
         buf.write("\u00ad\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
         buf.write("\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\4\16")
         buf.write("\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22\4\23\t\23")
-        buf.write("\4\24\t\24\4\25\t\25\3\2\3\2\3\2\3\2\3\2\3\2\3\3\3\3\3")
+        buf.write("\4\24\t\24\4\25\t\25\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\3\3")
         buf.write("\3\3\4\3\4\3\4\7\4\67\n\4\f\4\16\4:\13\4\3\5\3\5\3\5\3")
         buf.write("\5\7\5@\n\5\f\5\16\5C\13\5\3\5\3\5\3\5\3\5\3\5\7\5J\n")
         buf.write("\5\f\5\16\5M\13\5\5\5O\n\5\3\6\3\6\3\6\7\6T\n\6\f\6\16")
@@ -25,52 +25,51 @@ def serializedATN():
         buf.write("\23\6\23\u0099\n\23\r\23\16\23\u009a\3\23\3\23\3\24\3")
         buf.write("\24\5\24\u00a1\n\24\3\25\3\25\3\25\3\25\6\25\u00a7\n\25")
         buf.write("\r\25\16\25\u00a8\3\25\3\25\3\25\2\2\26\2\4\6\b\n\f\16")
-        buf.write("\20\22\24\26\30\32\34\36 \"$&(\2\6\4\2\3\3\17\17\3\2\7")
-        buf.write("\b\3\2\26\30\4\2\13\13\23\23\2\u00aa\2*\3\2\2\2\4\60\3")
+        buf.write("\20\22\24\26\30\32\34\36 \"$&(\2\6\4\2\3\3\16\16\3\2\7")
+        buf.write("\b\3\2\25\27\4\2\13\13\22\22\2\u00aa\2*\3\2\2\2\4\61\3")
         buf.write("\2\2\2\6\63\3\2\2\2\bN\3\2\2\2\nP\3\2\2\2\fd\3\2\2\2\16")
         buf.write("f\3\2\2\2\20i\3\2\2\2\22r\3\2\2\2\24v\3\2\2\2\26y\3\2")
         buf.write("\2\2\30}\3\2\2\2\32\177\3\2\2\2\34\u0082\3\2\2\2\36\u0084")
         buf.write("\3\2\2\2 \u008f\3\2\2\2\"\u0092\3\2\2\2$\u0096\3\2\2\2")
-        buf.write("&\u00a0\3\2\2\2(\u00a2\3\2\2\2*+\5\4\3\2+,\5\6\4\2,-\7")
-        buf.write("\32\2\2-.\5\n\6\2./\7\2\2\3/\3\3\2\2\2\60\61\7\17\2\2")
-        buf.write("\61\62\7\32\2\2\62\5\3\2\2\2\638\5\b\5\2\64\65\7\32\2")
-        buf.write("\2\65\67\5\b\5\2\66\64\3\2\2\2\67:\3\2\2\28\66\3\2\2\2")
-        buf.write("89\3\2\2\29\7\3\2\2\2:8\3\2\2\2;<\7\16\2\2<A\5&\24\2=")
-        buf.write(">\7\23\2\2>@\5\20\t\2?=\3\2\2\2@C\3\2\2\2A?\3\2\2\2AB")
-        buf.write("\3\2\2\2BO\3\2\2\2CA\3\2\2\2DE\7\16\2\2EF\5&\24\2FK\5")
-        buf.write("\20\t\2GH\7\23\2\2HJ\5\20\t\2IG\3\2\2\2JM\3\2\2\2KI\3")
-        buf.write("\2\2\2KL\3\2\2\2LO\3\2\2\2MK\3\2\2\2N;\3\2\2\2ND\3\2\2")
-        buf.write("\2O\t\3\2\2\2PU\5\f\7\2QR\7\32\2\2RT\5\f\7\2SQ\3\2\2\2")
-        buf.write("TW\3\2\2\2US\3\2\2\2UV\3\2\2\2V\13\3\2\2\2WU\3\2\2\2X")
-        buf.write("Y\7\20\2\2Ye\5\16\b\2Z[\7\20\2\2[\\\5\16\b\2\\a\5\20\t")
-        buf.write("\2]^\7\23\2\2^`\5\20\t\2_]\3\2\2\2`c\3\2\2\2a_\3\2\2\2")
-        buf.write("ab\3\2\2\2be\3\2\2\2ca\3\2\2\2dX\3\2\2\2dZ\3\2\2\2e\r")
-        buf.write("\3\2\2\2fg\t\2\2\2g\17\3\2\2\2hj\t\3\2\2ih\3\2\2\2ij\3")
-        buf.write("\2\2\2jm\3\2\2\2kn\5\24\13\2ln\5\22\n\2mk\3\2\2\2ml\3")
-        buf.write("\2\2\2n\21\3\2\2\2os\5\30\r\2ps\5\32\16\2qs\5\34\17\2")
-        buf.write("ro\3\2\2\2rp\3\2\2\2rq\3\2\2\2s\23\3\2\2\2tw\5\36\20\2")
-        buf.write("uw\5 \21\2vt\3\2\2\2vu\3\2\2\2w\25\3\2\2\2xz\t\3\2\2y")
-        buf.write("x\3\2\2\2yz\3\2\2\2z{\3\2\2\2{|\5\22\n\2|\27\3\2\2\2}")
-        buf.write("~\t\4\2\2~\31\3\2\2\2\177\u0080\5\"\22\2\u0080\u0081\7")
-        buf.write("\21\2\2\u0081\33\3\2\2\2\u0082\u0083\5\"\22\2\u0083\35")
-        buf.write("\3\2\2\2\u0084\u0085\7\24\2\2\u0085\u008a\5\26\f\2\u0086")
-        buf.write("\u0087\7\23\2\2\u0087\u0089\5\26\f\2\u0088\u0086\3\2\2")
-        buf.write("\2\u0089\u008c\3\2\2\2\u008a\u0088\3\2\2\2\u008a\u008b")
-        buf.write("\3\2\2\2\u008b\u008d\3\2\2\2\u008c\u008a\3\2\2\2\u008d")
-        buf.write("\u008e\7\25\2\2\u008e\37\3\2\2\2\u008f\u0090\5\"\22\2")
-        buf.write("\u0090\u0091\7\22\2\2\u0091!\3\2\2\2\u0092\u0094\7\17")
-        buf.write("\2\2\u0093\u0095\5$\23\2\u0094\u0093\3\2\2\2\u0094\u0095")
-        buf.write("\3\2\2\2\u0095#\3\2\2\2\u0096\u0098\7\t\2\2\u0097\u0099")
-        buf.write("\5\20\t\2\u0098\u0097\3\2\2\2\u0099\u009a\3\2\2\2\u009a")
-        buf.write("\u0098\3\2\2\2\u009a\u009b\3\2\2\2\u009b\u009c\3\2\2\2")
-        buf.write("\u009c\u009d\7\n\2\2\u009d%\3\2\2\2\u009e\u00a1\5(\25")
-        buf.write("\2\u009f\u00a1\5\20\t\2\u00a0\u009e\3\2\2\2\u00a0\u009f")
-        buf.write("\3\2\2\2\u00a1\'\3\2\2\2\u00a2\u00a3\7\5\2\2\u00a3\u00a6")
-        buf.write("\5&\24\2\u00a4\u00a5\t\5\2\2\u00a5\u00a7\5&\24\2\u00a6")
-        buf.write("\u00a4\3\2\2\2\u00a7\u00a8\3\2\2\2\u00a8\u00a6\3\2\2\2")
-        buf.write("\u00a8\u00a9\3\2\2\2\u00a9\u00aa\3\2\2\2\u00aa\u00ab\7")
-        buf.write("\6\2\2\u00ab)\3\2\2\2\238AKNUadimrvy\u008a\u0094\u009a")
-        buf.write("\u00a0\u00a8")
+        buf.write("&\u00a0\3\2\2\2(\u00a2\3\2\2\2*+\5\4\3\2+,\7\31\2\2,-")
+        buf.write("\5\6\4\2-.\7\31\2\2./\5\n\6\2/\60\7\2\2\3\60\3\3\2\2\2")
+        buf.write("\61\62\7\f\2\2\62\5\3\2\2\2\638\5\b\5\2\64\65\7\31\2\2")
+        buf.write("\65\67\5\b\5\2\66\64\3\2\2\2\67:\3\2\2\28\66\3\2\2\28")
+        buf.write("9\3\2\2\29\7\3\2\2\2:8\3\2\2\2;<\7\r\2\2<A\5&\24\2=>\7")
+        buf.write("\22\2\2>@\5\20\t\2?=\3\2\2\2@C\3\2\2\2A?\3\2\2\2AB\3\2")
+        buf.write("\2\2BO\3\2\2\2CA\3\2\2\2DE\7\r\2\2EF\5&\24\2FK\5\20\t")
+        buf.write("\2GH\7\22\2\2HJ\5\20\t\2IG\3\2\2\2JM\3\2\2\2KI\3\2\2\2")
+        buf.write("KL\3\2\2\2LO\3\2\2\2MK\3\2\2\2N;\3\2\2\2ND\3\2\2\2O\t")
+        buf.write("\3\2\2\2PU\5\f\7\2QR\7\31\2\2RT\5\f\7\2SQ\3\2\2\2TW\3")
+        buf.write("\2\2\2US\3\2\2\2UV\3\2\2\2V\13\3\2\2\2WU\3\2\2\2XY\7\17")
+        buf.write("\2\2Ye\5\16\b\2Z[\7\17\2\2[\\\5\16\b\2\\a\5\20\t\2]^\7")
+        buf.write("\22\2\2^`\5\20\t\2_]\3\2\2\2`c\3\2\2\2a_\3\2\2\2ab\3\2")
+        buf.write("\2\2be\3\2\2\2ca\3\2\2\2dX\3\2\2\2dZ\3\2\2\2e\r\3\2\2")
+        buf.write("\2fg\t\2\2\2g\17\3\2\2\2hj\t\3\2\2ih\3\2\2\2ij\3\2\2\2")
+        buf.write("jm\3\2\2\2kn\5\24\13\2ln\5\22\n\2mk\3\2\2\2ml\3\2\2\2")
+        buf.write("n\21\3\2\2\2os\5\30\r\2ps\5\32\16\2qs\5\34\17\2ro\3\2")
+        buf.write("\2\2rp\3\2\2\2rq\3\2\2\2s\23\3\2\2\2tw\5\36\20\2uw\5 ")
+        buf.write("\21\2vt\3\2\2\2vu\3\2\2\2w\25\3\2\2\2xz\t\3\2\2yx\3\2")
+        buf.write("\2\2yz\3\2\2\2z{\3\2\2\2{|\5\22\n\2|\27\3\2\2\2}~\t\4")
+        buf.write("\2\2~\31\3\2\2\2\177\u0080\5\"\22\2\u0080\u0081\7\20\2")
+        buf.write("\2\u0081\33\3\2\2\2\u0082\u0083\5\"\22\2\u0083\35\3\2")
+        buf.write("\2\2\u0084\u0085\7\23\2\2\u0085\u008a\5\26\f\2\u0086\u0087")
+        buf.write("\7\22\2\2\u0087\u0089\5\26\f\2\u0088\u0086\3\2\2\2\u0089")
+        buf.write("\u008c\3\2\2\2\u008a\u0088\3\2\2\2\u008a\u008b\3\2\2\2")
+        buf.write("\u008b\u008d\3\2\2\2\u008c\u008a\3\2\2\2\u008d\u008e\7")
+        buf.write("\24\2\2\u008e\37\3\2\2\2\u008f\u0090\5\"\22\2\u0090\u0091")
+        buf.write("\7\21\2\2\u0091!\3\2\2\2\u0092\u0094\7\16\2\2\u0093\u0095")
+        buf.write("\5$\23\2\u0094\u0093\3\2\2\2\u0094\u0095\3\2\2\2\u0095")
+        buf.write("#\3\2\2\2\u0096\u0098\7\t\2\2\u0097\u0099\5\20\t\2\u0098")
+        buf.write("\u0097\3\2\2\2\u0099\u009a\3\2\2\2\u009a\u0098\3\2\2\2")
+        buf.write("\u009a\u009b\3\2\2\2\u009b\u009c\3\2\2\2\u009c\u009d\7")
+        buf.write("\n\2\2\u009d%\3\2\2\2\u009e\u00a1\5(\25\2\u009f\u00a1")
+        buf.write("\5\20\t\2\u00a0\u009e\3\2\2\2\u00a0\u009f\3\2\2\2\u00a1")
+        buf.write("\'\3\2\2\2\u00a2\u00a3\7\5\2\2\u00a3\u00a6\5&\24\2\u00a4")
+        buf.write("\u00a5\t\5\2\2\u00a5\u00a7\5&\24\2\u00a6\u00a4\3\2\2\2")
+        buf.write("\u00a7\u00a8\3\2\2\2\u00a8\u00a6\3\2\2\2\u00a8\u00a9\3")
+        buf.write("\2\2\2\u00a9\u00aa\3\2\2\2\u00aa\u00ab\7\6\2\2\u00ab)")
+        buf.write("\3\2\2\2\238AKNUadimrvy\u008a\u0094\u009a\u00a0\u00a8")
         return buf.getvalue()
 
 
@@ -86,7 +85,7 @@ class DXBCParser ( Parser ):
 
     literalNames = [ "<INVALID>", "'sample_indexable(texture2d)(float,float,float,float)'", 
                      "'{'", "<INVALID>", "'}'", "'+'", "'-'", "'['", "']'", 
-                     "<INVALID>", "'ps_'", "<INVALID>", "<INVALID>", "<INVALID>", 
+                     "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                      "<INVALID>", "')'", "<INVALID>", "<INVALID>", "<INVALID>", 
                      "<INVALID>", "'\n'" ]
@@ -94,9 +93,9 @@ class DXBCParser ( Parser ):
     symbolicNames = [ "<INVALID>", "SAMPLE_INDEXABLE_TOKEN", "BRACE_OPEN", 
                       "BRACE_LIST_START", "BRACE_LIST_END", "PLUS_OP", "SUB_OP", 
                       "ARRAY_IDX_OPEN", "ARRAY_IDX_CLOSE", "COMMA_SEP_NEWLINE", 
-                      "SHADER_TAG", "SHADER_VERSION", "DECL_NAME", "ID", 
-                      "INSTRUCTION_START", "SINGLE_COMPONENT", "SWIZZLE_COMPONENT", 
-                      "COMMA_SEP", "VECTOR_OPEN", "VECTOR_CLOSE", "HEX_IMMEDIATE_SCALAR", 
+                      "SHADER_TAG", "DECL_NAME", "ID", "INSTRUCTION_START", 
+                      "SINGLE_COMPONENT", "SWIZZLE_COMPONENT", "COMMA_SEP", 
+                      "VECTOR_OPEN", "VECTOR_CLOSE", "HEX_IMMEDIATE_SCALAR", 
                       "INT_IMMEDIATE_SCALAR", "FLOAT_IMMEDIATE_SCALAR", 
                       "WS", "NEWLINE" ]
 
@@ -139,20 +138,19 @@ class DXBCParser ( Parser ):
     ARRAY_IDX_CLOSE=8
     COMMA_SEP_NEWLINE=9
     SHADER_TAG=10
-    SHADER_VERSION=11
-    DECL_NAME=12
-    ID=13
-    INSTRUCTION_START=14
-    SINGLE_COMPONENT=15
-    SWIZZLE_COMPONENT=16
-    COMMA_SEP=17
-    VECTOR_OPEN=18
-    VECTOR_CLOSE=19
-    HEX_IMMEDIATE_SCALAR=20
-    INT_IMMEDIATE_SCALAR=21
-    FLOAT_IMMEDIATE_SCALAR=22
-    WS=23
-    NEWLINE=24
+    DECL_NAME=11
+    ID=12
+    INSTRUCTION_START=13
+    SINGLE_COMPONENT=14
+    SWIZZLE_COMPONENT=15
+    COMMA_SEP=16
+    VECTOR_OPEN=17
+    VECTOR_CLOSE=18
+    HEX_IMMEDIATE_SCALAR=19
+    INT_IMMEDIATE_SCALAR=20
+    FLOAT_IMMEDIATE_SCALAR=21
+    WS=22
+    NEWLINE=23
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
@@ -173,12 +171,15 @@ class DXBCParser ( Parser ):
             return self.getTypedRuleContext(DXBCParser.Shader_nameContext,0)
 
 
+        def NEWLINE(self, i:int=None):
+            if i is None:
+                return self.getTokens(DXBCParser.NEWLINE)
+            else:
+                return self.getToken(DXBCParser.NEWLINE, i)
+
         def declarations(self):
             return self.getTypedRuleContext(DXBCParser.DeclarationsContext,0)
 
-
-        def NEWLINE(self):
-            return self.getToken(DXBCParser.NEWLINE, 0)
 
         def instructions(self):
             return self.getTypedRuleContext(DXBCParser.InstructionsContext,0)
@@ -198,6 +199,12 @@ class DXBCParser ( Parser ):
             if hasattr( listener, "exitDxbc_file" ):
                 listener.exitDxbc_file(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDxbc_file" ):
+                return visitor.visitDxbc_file(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -210,12 +217,14 @@ class DXBCParser ( Parser ):
             self.state = 40
             self.shader_name()
             self.state = 41
-            self.declarations()
-            self.state = 42
             self.match(DXBCParser.NEWLINE)
+            self.state = 42
+            self.declarations()
             self.state = 43
-            self.instructions()
+            self.match(DXBCParser.NEWLINE)
             self.state = 44
+            self.instructions()
+            self.state = 45
             self.match(DXBCParser.EOF)
         except RecognitionException as re:
             localctx.exception = re
@@ -232,11 +241,8 @@ class DXBCParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
-        def ID(self):
-            return self.getToken(DXBCParser.ID, 0)
-
-        def NEWLINE(self):
-            return self.getToken(DXBCParser.NEWLINE, 0)
+        def SHADER_TAG(self):
+            return self.getToken(DXBCParser.SHADER_TAG, 0)
 
         def getRuleIndex(self):
             return DXBCParser.RULE_shader_name
@@ -249,6 +255,12 @@ class DXBCParser ( Parser ):
             if hasattr( listener, "exitShader_name" ):
                 listener.exitShader_name(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitShader_name" ):
+                return visitor.visitShader_name(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -258,10 +270,8 @@ class DXBCParser ( Parser ):
         self.enterRule(localctx, 2, self.RULE_shader_name)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 46
-            self.match(DXBCParser.ID)
             self.state = 47
-            self.match(DXBCParser.NEWLINE)
+            self.match(DXBCParser.SHADER_TAG)
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -300,6 +310,12 @@ class DXBCParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitDeclarations" ):
                 listener.exitDeclarations(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDeclarations" ):
+                return visitor.visitDeclarations(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -370,6 +386,12 @@ class DXBCParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitDeclaration" ):
                 listener.exitDeclaration(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDeclaration" ):
+                return visitor.visitDeclaration(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -465,6 +487,12 @@ class DXBCParser ( Parser ):
             if hasattr( listener, "exitInstructions" ):
                 listener.exitInstructions(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitInstructions" ):
+                return visitor.visitInstructions(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -534,6 +562,12 @@ class DXBCParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitInstruction" ):
                 listener.exitInstruction(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitInstruction" ):
+                return visitor.visitInstruction(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -610,6 +644,12 @@ class DXBCParser ( Parser ):
             if hasattr( listener, "exitInstruction_name" ):
                 listener.exitInstruction_name(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitInstruction_name" ):
+                return visitor.visitInstruction_name(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -666,6 +706,12 @@ class DXBCParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitValue" ):
                 listener.exitValue(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitValue" ):
+                return visitor.visitValue(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -742,6 +788,12 @@ class DXBCParser ( Parser ):
             if hasattr( listener, "exitScalar_value" ):
                 listener.exitScalar_value(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitScalar_value" ):
+                return visitor.visitScalar_value(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -806,6 +858,12 @@ class DXBCParser ( Parser ):
             if hasattr( listener, "exitVector_value" ):
                 listener.exitVector_value(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitVector_value" ):
+                return visitor.visitVector_value(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -865,6 +923,12 @@ class DXBCParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitComponent_value" ):
                 listener.exitComponent_value(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitComponent_value" ):
+                return visitor.visitComponent_value(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -926,6 +990,12 @@ class DXBCParser ( Parser ):
             if hasattr( listener, "exitImmediate_scalar" ):
                 listener.exitImmediate_scalar(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitImmediate_scalar" ):
+                return visitor.visitImmediate_scalar(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -976,6 +1046,12 @@ class DXBCParser ( Parser ):
             if hasattr( listener, "exitSingle_vector_component" ):
                 listener.exitSingle_vector_component(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSingle_vector_component" ):
+                return visitor.visitSingle_vector_component(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1018,6 +1094,12 @@ class DXBCParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitScalar_variable" ):
                 listener.exitScalar_variable(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitScalar_variable" ):
+                return visitor.visitScalar_variable(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1074,6 +1156,12 @@ class DXBCParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitImmediate_vector" ):
                 listener.exitImmediate_vector(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitImmediate_vector" ):
+                return visitor.visitImmediate_vector(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1136,6 +1224,12 @@ class DXBCParser ( Parser ):
             if hasattr( listener, "exitSwizzled_vector_variable" ):
                 listener.exitSwizzled_vector_variable(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSwizzled_vector_variable" ):
+                return visitor.visitSwizzled_vector_variable(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1181,6 +1275,12 @@ class DXBCParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitVariable_name" ):
                 listener.exitVariable_name(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitVariable_name" ):
+                return visitor.visitVariable_name(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1241,6 +1341,12 @@ class DXBCParser ( Parser ):
             if hasattr( listener, "exitArray_index" ):
                 listener.exitArray_index(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitArray_index" ):
+                return visitor.visitArray_index(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1300,6 +1406,12 @@ class DXBCParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitBrace_list_or_val" ):
                 listener.exitBrace_list_or_val(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitBrace_list_or_val" ):
+                return visitor.visitBrace_list_or_val(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1375,6 +1487,12 @@ class DXBCParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitBrace_list" ):
                 listener.exitBrace_list(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitBrace_list" ):
+                return visitor.visitBrace_list(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
