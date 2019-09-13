@@ -1,4 +1,4 @@
-from dxbc.tokens.Base import RegexToken, Token
+from dxbc.legacy.tokens.Base import RegexToken, Token
 
 closers = {
     '(': ')',

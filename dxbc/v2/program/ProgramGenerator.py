@@ -1,17 +1,17 @@
 import collections
 from copy import copy
 from itertools import chain
-from typing import Dict, List, Tuple, Sequence, Mapping, Optional
+from typing import Dict, List, Tuple, Sequence, Mapping
 
 from dxbc.v2.Types import ScalarType
-from dxbc.v2.disassembly.Tokenizer import NameToken, reraise
+from dxbc.v2.program.Action import Action
+from dxbc.v2.program.DeclName import DeclName
 from dxbc.v2.program.Functions import Function, TruncateToOutput, function_map
-from dxbc.v2.program.State import ProgramState, get_scalar_ids, DXBCError, SwizzledVectorValue, ScalarID, \
+from dxbc.v2.program.Program import Program
+from dxbc.v2.program.State import ExecutionState, get_scalar_ids, DXBCError, ScalarID, \
     VectorComponent, VariableState
 from dxbc.v2.values import *
-from dxbc.v2.values.Utils import get_type_string
-
-Action = collections.namedtuple('Action', 'func remapped_in remapped_out new_variable new_state')
+from utils import reraise
 
 class ProgramGenerator:
     total_scalar_variables = 0
@@ -23,15 +23,15 @@ class ProgramGenerator:
     def __init__(self):
         pass
 
-    def build_program(self, decl_data: Mapping[NameToken, List[List[Value]]],
-                  instr_data: Sequence[Tuple[str, List[Value]]]) -> 'Program':
+    def build_program(self, decl_data: Mapping[DeclName, List[List[Value]]],
+                      instr_data: Sequence[Tuple[str, List[Value]]]) -> 'Program':
         initial_state, self.registers = self.generate_initial_state(decl_data)
 
         # for e in NameToken:
-        #    print(f"{e.name}: {[x.tokens[3].str_data for x in declaration_dict[e]]}")
+        #    print(f"{e.name}: {[x.value_tokens[3].str_data for x in declaration_dict[e]]}")
 
         current_tick: int = 0
-        current_state: ProgramState = initial_state
+        current_state: ExecutionState = initial_state
 
         actions: List[Action] = []
 
@@ -62,7 +62,7 @@ class ProgramGenerator:
                 if output_value:
                     new_variable = self.update_state(function, input_vals, output_value, current_state)
 
-                def apply_remap(value: Value, state: ProgramState):
+                def apply_remap(value: Value, state: ExecutionState):
                     if isinstance(value, SingleVectorComponent):
                         name = copy(state.get_name(ScalarID(value), value))
                         name.negated = value.negated
@@ -94,18 +94,18 @@ class ProgramGenerator:
         return Program(initial_state, actions)
 
     @staticmethod
-    def generate_initial_state(decl_data: Mapping[NameToken, List[List[Value]]]) -> Tuple[ProgramState, List[str]]:
+    def generate_initial_state(decl_data: Mapping[DeclName, List[List[Value]]]) -> Tuple[ExecutionState, List[str]]:
         initial_types: Dict[VarNameBase, ScalarType] = {}
         initial_vector_state: Dict[VarNameBase, int] = {}
         scalar_variable_names: List[VarNameBase] = []
 
-        for x in decl_data[NameToken.ImmediateBufferToken]:
+        for x in decl_data[DeclName.ImmediateBufferToken]:
             # TODO: Assume immediate constant buffer is float4x4
             initial_types[VarNameBase("icb")] = ScalarType.Float
             initial_vector_state[VarNameBase("icb")] = 4
             break  # Only expect one
 
-        for arg_tokens in decl_data[NameToken.ConstantBufferToken]:
+        for arg_tokens in decl_data[DeclName.ConstantBufferToken]:
             if (len(arg_tokens) == 0
                     or not isinstance(arg_tokens[0], ScalarVariable)
                     or not isinstance(arg_tokens[0].scalar_name, IndexedVarName)):
@@ -115,7 +115,7 @@ class ProgramGenerator:
             initial_types[base_name] = ScalarType.Float
             initial_vector_state[base_name] = 4
 
-        for arg_tokens in (decl_data[NameToken.SamplerToken] + decl_data[NameToken.TextureToken]):
+        for arg_tokens in (decl_data[DeclName.SamplerToken] + decl_data[DeclName.TextureToken]):
             if (len(arg_tokens) == 0
                     or not isinstance(arg_tokens[0], ScalarVariable)
                     or not type(arg_tokens[0].scalar_name) == VarNameBase):
@@ -128,9 +128,9 @@ class ProgramGenerator:
             else:
                 scalar_variable_names.append(base_name)
 
-        for arg_tokens in (decl_data[NameToken.TypedPSInput]
-                           + decl_data[NameToken.UntypedInput]
-                           + decl_data[NameToken.Output]):
+        for arg_tokens in (decl_data[DeclName.TypedPSInput]
+                           + decl_data[DeclName.UntypedInput]
+                           + decl_data[DeclName.Output]):
             if len(arg_tokens) == 0:
                 raise DXBCError(
                     f"Expected argument after input/output declaration, got '{arg_tokens}'")
@@ -171,10 +171,10 @@ class ProgramGenerator:
             for (name, t) in initial_types.items() if name not in scalar_variable_names
             for comp in VectorComponent if comp < initial_vector_state[name]
         })
-        initial_state = ProgramState(initial_scalar_types, initial_vector_state)
+        initial_state = ExecutionState(initial_scalar_types, initial_vector_state)
 
         registers = []
-        for arg_tokens in decl_data[NameToken.RegisterCount]:
+        for arg_tokens in decl_data[DeclName.RegisterCount]:
             if (len(arg_tokens) == 0
                     or not isinstance(arg_tokens[0], ImmediateScalar)):
                 print(arg_tokens)
@@ -190,7 +190,7 @@ class ProgramGenerator:
         return initial_state, registers
 
     def update_state(self, function: Function, input_vals: List[Value], output_value: Value,
-                     current_state: ProgramState):
+                     current_state: ExecutionState):
 
         output_ids = get_scalar_ids(output_value)
 
@@ -244,33 +244,3 @@ class ProgramGenerator:
                                              output_scalar_type)
             return True
         return False
-
-class Program:
-    initial_state: ProgramState
-    actions: List[Action]
-
-    registers: List[str] = []
-
-    def __init__(self, initial_state: ProgramState, actions: List[Action]):
-        self.initial_state = initial_state
-        self.actions = actions
-
-    def get_disassembled_shader(self) -> str:
-        raise NotImplementedError()
-
-    def get_function_contents_hlsl(self, line_prefix: str = ""):
-        function_contents = ""
-        for action in self.actions:
-            line_disassembly = f"{line_prefix}"
-            if action.remapped_out:
-                if action.new_variable:
-                    line_disassembly += f"{get_type_string(action.remapped_out.scalar_type, action.remapped_out.num_components)} "
-                vec_length = action.new_state.get_vector_length(action.remapped_out)
-                line_disassembly += f"{action.remapped_out.disassemble(vec_length)} = "
-
-            line_disassembly += f"{action.func.disassemble_call(action.remapped_in, action.new_state)};\n"
-            function_contents += line_disassembly
-        return function_contents
-
-    def get_declaration_hlsl(self, line_prefix: str = "") -> str:
-        raise NotImplementedError()

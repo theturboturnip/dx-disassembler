@@ -1,7 +1,7 @@
 from typing import Type, List
 
 from dxbc.Errors import DXBCTokenizeError, DXBCError
-from dxbc.tokens.Base import Token, EatReturnType
+from dxbc.legacy.tokens.Base import Token, EatReturnType
 from utils import list_str, reraise
 
 

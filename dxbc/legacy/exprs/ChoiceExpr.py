@@ -1,4 +1,4 @@
-from dxbc.exprs.Expr import Expr
+from dxbc.legacy.exprs import Expr
 
 
 class ChoiceExpr(Expr):

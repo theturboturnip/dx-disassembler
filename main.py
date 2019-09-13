@@ -1,4 +1,4 @@
-from dxbc.v2.disassembly.Disassembler import Disassembler
+from dxbc.legacy.disassembly.Disassembler import Disassembler
 
 from shader_source import ps_instruction_str as instruction_str
 

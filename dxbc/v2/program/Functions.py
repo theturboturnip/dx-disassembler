@@ -5,7 +5,7 @@ from typing import Union, List, Optional, Type, Tuple, Dict
 from dxbc.Errors import DXBCError
 from dxbc.v2.Types import VectorType, ScalarType, get_least_permissive_container_type
 from dxbc.v2.program import State
-from dxbc.v2.program.State import ProgramState
+from dxbc.v2.program.State import ExecutionState
 from dxbc.v2.values import ScalarValueBase, Value, VectorValueBase, mask_components, trim_components, \
     SwizzledVectorValue
 from dxbc.v2.values.Scalar import cast_scalar, reinterpret_scalar, SingleVectorComponent
@@ -77,7 +77,7 @@ class Function(ArgumentTruncation):
             raise DXBCError(f"Mismatched argument lengths for {self.name}: "
                             f"expected {len(self.input_types)}, got {len(input_args)}")
 
-    def disassemble_call(self, input_args: List[Value], current_state: ProgramState):
+    def disassemble_call(self, input_args: List[Value], current_state: ExecutionState):
         if len(input_args) == 0:
             return self.name
         casted_input_args = self.get_input_strings(input_args, self.determine_typehole_type(input_args), current_state)
@@ -88,7 +88,7 @@ class Function(ArgumentTruncation):
             return self.determine_typehole_type(input_args)
         return self.output_type
 
-    def get_input_strings(self, input_args: List[Value], typehole_value: Optional[ScalarType], current_state: ProgramState) -> List[str]:
+    def get_input_strings(self, input_args: List[Value], typehole_value: Optional[ScalarType], current_state: ExecutionState) -> List[str]:
         casted_input_args = [""] * len(input_args)
         for (i, t) in enumerate(self.input_types):
             t = t if type(t) is not TypeHole else typehole_value
@@ -112,22 +112,22 @@ class Function(ArgumentTruncation):
         return get_least_permissive_container_type(*typehole_types)
 
 class InfixFunction(Function):
-    def disassemble_call(self, input_args: List[Value], current_state: ProgramState):
+    def disassemble_call(self, input_args: List[Value], current_state: ExecutionState):
         casted_input_args = self.get_input_strings(input_args, self.determine_typehole_type(input_args), current_state)
         return f" {self.name} ".join(casted_input_args)
 
 class MoveFunction(Function):
-    def disassemble_call(self, input_args: List[Value], current_state: ProgramState):
+    def disassemble_call(self, input_args: List[Value], current_state: ExecutionState):
         casted_input_args = self.get_input_strings(input_args, self.determine_typehole_type(input_args), current_state)
         return casted_input_args[0]
 
 class MulAddFunction(Function):
-    def disassemble_call(self, input_args: List[Value], current_state: ProgramState):
+    def disassemble_call(self, input_args: List[Value], current_state: ExecutionState):
         casted_input_args = self.get_input_strings(input_args, self.determine_typehole_type(input_args), current_state)
         return "({} * {}) + {}".format(casted_input_args[0], casted_input_args[1], casted_input_args[2])
 
 class MoveCondFunction(Function):
-    def disassemble_call(self, input_args: List[Value], current_state: ProgramState):
+    def disassemble_call(self, input_args: List[Value], current_state: ExecutionState):
         casted_input_args = self.get_input_strings(input_args, self.determine_typehole_type(input_args), current_state)
         return "{} ? {} : {}".format(casted_input_args[0], casted_input_args[1], casted_input_args[2])
 

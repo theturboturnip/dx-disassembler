@@ -1,4 +1,4 @@
-from dxbc.tokens import *
+from dxbc.legacy.tokens import *
 from dxbc.v2.Definitions import VectorComponent
 from dxbc.v2.Types import ScalarType
 from dxbc.v2.values import *
@@ -151,7 +151,7 @@ class UnnamedVectorValueToken(
             negated = True
             token_list = token_list[1:]
 
-        token_list = token_list[1:-1] # Cut off UnnamedVectorStart/End tokens
+        token_list = token_list[1:-1] # Cut off UnnamedVectorStart/End value_tokens
         values = [x.value for x in filter(lambda x: isinstance(x, NamedOrImmediateValueTokenTypes), token_list)]
         if len(values) == 1:
             # TODO: Handle negation?

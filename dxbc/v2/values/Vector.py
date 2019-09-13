@@ -1,8 +1,8 @@
-from typing import List, cast, Tuple, overload
+from typing import List, cast, Tuple
 
 from dxbc.Errors import DXBCError
 from dxbc.v2.values import VarNames
-from dxbc.v2.values import VectorValueBase, ScalarValueBase, Value
+from dxbc.v2.values import VectorValueBase, ScalarValueBase
 from dxbc.v2.values import SingleVectorComponent
 from utils import FirstPossibleOf
 

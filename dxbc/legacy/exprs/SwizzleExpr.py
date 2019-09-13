@@ -1,7 +1,7 @@
 import re
 
-from dxbc.exprs import Expr
-from dxbc.exprs.ValueExpr import ValueExpr
+from dxbc.legacy.exprs import Expr
+from dxbc.legacy.exprs import ValueExpr
 
 # TODO Variable-aware array indexing
 full_regex = re.compile(r"(" +  # First group, holds variable to swizzle

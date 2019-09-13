@@ -1,6 +1,6 @@
 import re
 
-from dxbc.exprs.ValueExpr import ValueExpr
+from dxbc.legacy.exprs import ValueExpr
 
 coarse_regex = re.compile(r"l\(([^)]+)\)")
 constructor_names = {

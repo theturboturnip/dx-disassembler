@@ -6,7 +6,7 @@ from dxbc.v2.values.Scalar import cast_scalar
 from utils import dict_str
 
 
-class ProgramState:
+class ExecutionState:
     state_map: Dict[ScalarID, VariableState]
     vector_map: Dict[VarNameBase, int]
 
@@ -15,7 +15,7 @@ class ProgramState:
         self.vector_map = vector_map if vector_map is not None else {}
 
     def copy(self):
-        return ProgramState(self.state_map.copy(), self.vector_map.copy())
+        return ExecutionState(self.state_map.copy(), self.vector_map.copy())
 
     def get_type(self, scalar_id: ScalarID, default: Optional[ScalarType] = ScalarType.Untyped) -> Optional[ScalarType]:
         var_state = self.state_map.get(scalar_id, None)

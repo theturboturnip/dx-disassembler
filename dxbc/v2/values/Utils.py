@@ -11,10 +11,12 @@ def map_scalar_values(f: Callable[[ScalarValueBase], ScalarValueBase], value: Va
     elif isinstance(value, VectorValueBase):
         return VectorValue([f(scalar) for scalar in value.scalar_values], False)
 
+
 def get_type_string(scalar_type: ScalarType, count: int):
     if count == 1:
         return scalar_type.name()
     return f"{scalar_type.name()}{count}"
+
 
 @overload
 def trim_components(vec: VectorValueBase, component_count: int) -> VectorValueBase:

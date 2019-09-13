@@ -1,10 +1,12 @@
-from enum import Enum, IntEnum
-from typing import cast
+from enum import IntEnum
 
-from dxbc.Errors import DXBCInstructionDecodeError, DXBCError
-from dxbc.tokens import *
+from dxbc.Errors import DXBCInstructionDecodeError
+from dxbc.legacy.tokens import RegexToken, SequenceToken, WhitespaceToken, FirstOfTokens, NewlineToken
+from dxbc.legacy.tokens.Lang import *
+from dxbc.legacy.value_tokens.Tokens import *
+from dxbc.v2.program.DeclName import DeclName
 from dxbc.v2.values import Value
-from dxbc.v2.values.tokens import ValueToken, ValueHoldingToken
+from dxbc.legacy.tokens import *
 from utils import reraise
 
 CT = CompoundToken
@@ -46,24 +48,6 @@ UNTYPED_INPUT = RegexToken(r"input(_ps_siv)?")
 OUTPUT = RegexToken(r"output")
 REGISTER_COUNT = RegexToken(r"temps")
 
-class NameToken(IntEnum):
-    GlobalFlags = 0,
-    ImmediateBufferToken = 1,
-    ConstantBufferToken = 2,
-    SamplerToken = 3,
-    TextureToken = 4,
-    TypedPSInput = 5,
-    UntypedInput = 6,
-    Output = 7,
-    RegisterCount = 8
-
-    def to_type(self) -> Type[Token]:
-        return NAME_TOKENS_TYPE_LIST[self.value]
-
-    @staticmethod
-    def from_type(t: Type[Token]) -> 'NameToken':
-        return NameToken(NAME_TOKENS_TYPE_LIST.index(t))
-
 NAME_TOKENS_TYPE_LIST = [
     GLOBAL_FLAGS_TOKEN,
     IMMEDIATE_BUFFER_TOKEN,
@@ -75,6 +59,13 @@ NAME_TOKENS_TYPE_LIST = [
     OUTPUT,
     REGISTER_COUNT
 ]
+
+def name_token_to_type(self: DeclName) -> Type[Token]:
+    return NAME_TOKENS_TYPE_LIST[self.value]
+
+
+def name_token_from_type(t: Type[Token]) -> DeclName:
+    return DeclName(NAME_TOKENS_TYPE_LIST.index(t))
 
 DECLARATION_START_TOKEN = SequenceToken(WhitespaceToken, RegexToken("dcl_", "DeclToken"))
 DECLARATION_NAME_TOKEN = FirstOfTokens(*NAME_TOKENS_TYPE_LIST)
@@ -101,7 +92,7 @@ def make_file_token(*token_types: Type[Token]):
                     current_instruction_line = remaining_data[:remaining_data.index("\n")]
                     reraise(e,
                             f"Error when tokenizing line {line_number} \"{current_instruction_line}\":\n\t{{}}, "
-                            f"tokens so far: {tokens}".replace("{", "{{").replace("}", "}}"))
+                            f"value_tokens so far: {tokens}".replace("{", "{{").replace("}", "}}"))
                     raise
                 line_number += 1
             return tokens, remaining_data
@@ -127,19 +118,19 @@ class Tokenizer:
 
     """def next_instruction(self, remaining) -> Tuple[Tuple[str, List[Value]], str]:
         try:
-            tokens, remaining = INSTRUCTION_TOKEN.eat(remaining)
+            value_tokens, remaining = INSTRUCTION_TOKEN.eat(remaining)
         except DXBCError as e:
             current_instruction_line = remaining[:remaining.index("\n")]
             reraise(e,
                     f"{{}} encountered when tokenizing {current_instruction_line}, tokenized {remaining[:-len(remaining)]}")
             raise
 
-        instruction_token: INSTRUCTION_TOKEN = cast(INSTRUCTION_TOKEN, tokens[0])
+        instruction_token: INSTRUCTION_TOKEN = cast(INSTRUCTION_TOKEN, value_tokens[0])
 
         try:
-            return self.extract_instruction_data(instruction_token.tokens), remaining
+            return self.extract_instruction_data(instruction_token.value_tokens), remaining
         except DXBCError as e:
-            reraise(e, "{} encountered when disassembling " + list_str(tokens))
+            reraise(e, "{} encountered when disassembling " + list_str(value_tokens))
             raise"""
 
     def extract_instruction_data(self, tokens: List[Token]) -> Tuple[str, List[Value]]:

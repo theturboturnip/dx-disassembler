@@ -3,7 +3,6 @@ from itertools import permutations
 from numbers import Number
 
 from dxbc.v2.values import *
-from dxbc.v2.values.tokens.Tokens import *
 
 
 class ImmediateScalarValueTokenTestCase(unittest.TestCase):
