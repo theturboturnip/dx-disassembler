@@ -1,0 +1,2 @@
+class DXCallError(Exception):
+    pass

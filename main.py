@@ -1,6 +1,5 @@
+from dx.compile import compile_shader
 from dxbc.grammar.parser import DisassemblyParser
-from dxbc.legacy.disassembly.Disassembler import Disassembler
-from dxbc.v2.program.decl_name import DeclName
 from dxbc.v2.program.program_generator import ProgramGenerator
 
 from shader_source import ps_instruction_str as instruction_str
@@ -12,6 +11,8 @@ program = pg.build_program(dp.declarations, dp.instructions)
 #print(dp.declarations[DeclName.UntypedInput])
 print(program.get_disassembled_shader())
 
+flags = (1 << 11) | (1 << 21) | (1 << 15)
+compile_bytes = compile_shader(program.get_disassembled_shader(), "DISASSEMBLED_SHADER", flags)
 
 #disassembler = Disassembler()
 #disassembler.disassemble_file(instruction_str)
