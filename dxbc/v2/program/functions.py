@@ -111,6 +111,10 @@ class Function(ArgumentTruncation):
             return None
         return get_least_permissive_container_type(*typehole_types)
 
+class NullFunction(Function):
+    def disassemble_call(self, input_args: List[Value], current_state: ExecutionState):
+        return ""
+
 class InfixFunction(Function):
     def disassemble_call(self, input_args: List[Value], current_state: ExecutionState):
         casted_input_args = self.get_input_strings(input_args, self.determine_typehole_type(input_args), current_state)
@@ -242,5 +246,5 @@ function_map: Dict[str, Function] = {
     "dp2": make_function(Function, makeTruncateToLength(2), "dot", [ScalarType.Float, ScalarType.Float], ScalarType.Float),
     "dp3": make_function(Function, makeTruncateToLength(3), "dot", [ScalarType.Float, ScalarType.Float], ScalarType.Float),
 
-    "ret": make_function(Function, NullTruncate, "return", [], None)
+    "ret": make_function(NullFunction, NullTruncate, "", [], None)
 }
