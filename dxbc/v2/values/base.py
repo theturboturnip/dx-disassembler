@@ -3,6 +3,7 @@ from typing import List, Tuple, Optional
 
 from dxbc.Errors import DXBCError
 from dxbc.v2.Types import get_least_permissive_container_type, ScalarType
+from dxbc.v2.values.var_names import VarNameBase
 
 
 class Value:
@@ -27,6 +28,9 @@ class Value:
         self.scalar_type = get_least_permissive_container_type(*component_types)
         self.negated = negated
         self.assignable = assignable
+
+    def get_var_name(self) -> Optional[VarNameBase]:
+        return None
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):

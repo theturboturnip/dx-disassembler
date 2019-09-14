@@ -26,6 +26,11 @@ class ScalarType(Enum):
     def encapsulates(self, other: 'ScalarType'):
         return self.value <= other.value
 
+    def promote_to_existing(self):
+        if self == ScalarType.Untyped:
+            return ScalarType.Float
+        return self
+
     def format_as_string(self, value):
         if self == ScalarType.Float:
             return f"{value:g}"

@@ -34,6 +34,3 @@ class DeclStorage:
         if item is DeclName.ImmediateBufferToken:
             raise DXBCError("Can't index DeclStorage for ImmediateBufferToken, use .icb_buffers instead")
         return self.normal_storage[item]
-
-    def keys(self):
-        return DeclName.__members__

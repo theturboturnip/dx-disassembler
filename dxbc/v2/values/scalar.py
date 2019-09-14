@@ -60,6 +60,8 @@ class ScalarVariable(ScalarValueBase):
     def disassemble(self, type_length: int = -1):
         return "{}{}".format("-" if self.negated else "", self.scalar_name)
 
+    def get_var_name(self) -> VarNameBase:
+        return self.scalar_name
 
 class SingleVectorComponent(ScalarValueBase):
     vector_name: VarNameBase
@@ -78,6 +80,9 @@ class SingleVectorComponent(ScalarValueBase):
 
     def __repr__(self):
         return f"SingleVectorComponent {self.scalar_type} {self.negated} {self.vector_name}.{self.component_name.name}"
+
+    def get_var_name(self) -> VarNameBase:
+        return self.vector_name
 
     def disassemble(self, type_length: int = -1):
         return "{}{}.{}".format("-" if self.negated else "", self.vector_name, self.component_name.name)

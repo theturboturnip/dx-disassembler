@@ -1,10 +1,9 @@
-import collections
 from copy import copy
 from itertools import chain
-from typing import Dict, List, Tuple, Sequence, Mapping, Optional
+from typing import Dict, List, Tuple, Sequence
 
 from dxbc.v2.Types import ScalarType
-from dxbc.v2.program.action import Action
+from dxbc.v2.program.actions.action import Action
 from dxbc.v2.program.decl_name import DeclName, DeclStorage
 from dxbc.v2.program.functions import Function, TruncateToOutput, function_map
 from dxbc.v2.program.program import Program
@@ -85,7 +84,7 @@ class ProgramGenerator:
 
             current_tick += 1
 
-        return Program(initial_state, actions, icb_contents)
+        return Program(decl_data, initial_state, actions)
 
     @staticmethod
     def generate_initial_state(decl_data: DeclStorage) -> Tuple[ExecutionState, List[str], str]:

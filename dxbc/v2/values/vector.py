@@ -1,7 +1,7 @@
 from typing import List, cast, Tuple
 
 from dxbc.Errors import DXBCError
-from dxbc.v2.values import var_names
+from dxbc.v2.values import var_names, VarNameBase
 from dxbc.v2.values import VectorValueBase, ScalarValueBase
 from dxbc.v2.values import SingleVectorComponent
 from utils import FirstPossibleOf
@@ -28,7 +28,7 @@ class SwizzledVectorValue(VectorValueBase):
     """
     A vector value created from components of a single named vector.
     """
-    vector_name: var_names
+    vector_name: VarNameBase
 
     def __init__(self, scalar_values: List[ScalarValueBase], negated: bool):
         vector_name = None
@@ -61,6 +61,9 @@ class SwizzledVectorValue(VectorValueBase):
 
     def __repr__(self):
         return "SwizzledVectorValue {}{}.{}".format("-" if self.negated else "", self.vector_name, "".join([x.name for x in self.components]))
+
+    def get_var_name(self) -> VarNameBase:
+        return self.vector_name
 
     def disassemble(self, type_length: int = -1):
         if type_length == self.num_components:

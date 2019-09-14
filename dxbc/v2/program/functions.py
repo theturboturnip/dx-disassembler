@@ -131,6 +131,22 @@ class MoveCondFunction(Function):
         casted_input_args = self.get_input_strings(input_args, self.determine_typehole_type(input_args), current_state)
         return "{} ? {} : {}".format(casted_input_args[0], casted_input_args[1], casted_input_args[2])
 
+class TextureSampleFunction(Function, TextureArgumentTruncation):
+    def __init__(self):
+        Function.__init__(self,
+            "sample_indexable(texture2d)(float,float,float,float)",
+            [
+                ScalarType.Float,   # UV
+                ScalarType.Untyped, # Texture
+                ScalarType.Untyped  # Sampler
+            ],
+            ScalarType.Float
+        )
+
+    def disassemble_call(self, input_args: List[Value], current_state: ExecutionState):
+        casted_input_args = self.get_input_strings(input_args, self.determine_typehole_type(input_args), current_state)
+        return "{1}.Sample({2}, {0})".format(casted_input_args[0], casted_input_args[1], casted_input_args[2])
+
 #class BitfieldInsertFunction(Function):
 #    def disassemble_call(self, input_args: List[Value]):
 #        casted_input_args = self.get_input_strings(input_args, self.determine_typehole_type(input_args))
@@ -162,20 +178,9 @@ def get_closest_types(value: Value) -> GenericValueType:
 
 
 function_map: Dict[str, Function] = {
-    "sample_indexable(texture2d)(float,float,float,float)":
-        make_function(
-            Function,
-            TextureArgumentTruncation,
-            "sample_texture",
-            [
-                ScalarType.Float,   # UV
-                ScalarType.Untyped, # Texture
-                ScalarType.Untyped  # Sampler
-            ],
-            ScalarType.Float
-        ),
+    "sample_indexable(texture2d)(float,float,float,float)": TextureSampleFunction(),
 
-    "discard_nz" : make_function(Function, NullTruncate, "discard_nz", [ScalarType.Untyped], None),
+    "discard_nz" : make_function(Function, NullTruncate, "DISCARD_NZ", [ScalarType.Untyped], None),
 
     "add": make_arithmetic_function("+", ScalarType.Float),
     "iadd": make_arithmetic_function("+", ScalarType.Uint),
@@ -200,7 +205,7 @@ function_map: Dict[str, Function] = {
     "bfi": make_function(
         Function,
         TruncateToOutput,
-        "bitrange_insert",
+        "BITRANGE_INSERT",
         [ScalarType.Uint] * 4,
         ScalarType.Uint
     ),

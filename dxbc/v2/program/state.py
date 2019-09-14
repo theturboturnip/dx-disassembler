@@ -17,16 +17,23 @@ class ExecutionState:
     def copy(self):
         return ExecutionState(self.state_map.copy(), self.vector_map.copy())
 
+    def get_type_for_either_name(self, name: VarNameBase):
+        name = name.as_base()
+        if name in self.vector_map:
+            return self.get_type(ScalarID(name, VectorComponent.x))
+        else:
+            return self.get_type(ScalarID(name))
+
     def get_type(self, scalar_id: ScalarID, default: Optional[ScalarType] = ScalarType.Untyped) -> Optional[ScalarType]:
         var_state = self.state_map.get(scalar_id, None)
         if var_state is None:
             return default
         return var_state.scalar_type
 
-    def get_vector_length(self, var: Value) -> int:
-        if isinstance(var, SwizzledVectorValue):
+    def get_vector_length(self, var: Value, default:int = -1) -> int:
+        if hasattr(var, "vector_name"):
             return self.vector_map[var.vector_name.as_base()]
-        return -1
+        return default
 
     def get_name(self, scalar_id: ScalarID, default: ScalarValueBase) -> ScalarValueBase:
         var_state = self.state_map.get(scalar_id, None)
