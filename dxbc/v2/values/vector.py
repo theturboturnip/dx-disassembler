@@ -16,7 +16,7 @@ class UnnamedVectorValue(VectorValueBase):
         return tuple([True] * self.num_components + [False] * (4 - self.num_components))
 
     def __repr__(self):
-        return "UnnamedVectorValue {} {} {} r/w:{}".format(self.scalar_type.name(), self.negated, ", ".join(repr(x) for x in self.scalar_values), self.assignable)
+        return "UnnamedVectorValue {} {} {} r/w:{}".format(self.scalar_type.name(), self.negated, ", ".join(repr(x) for x in self.scalar_values), self.named)
 
     def disassemble(self, type_length: int = -1):
         if all(x == self.scalar_values[0] for x in self.scalar_values):
@@ -64,6 +64,9 @@ class SwizzledVectorValue(VectorValueBase):
 
     def get_var_name(self) -> VarNameBase:
         return self.vector_name
+
+    def set_var_name(self, new_name: VarNameBase):
+        self.vector_name = new_name
 
     def get_component_str(self):
         return "".join(x.name for x in self.components)

@@ -14,7 +14,7 @@ class Value:
     num_components: int
     scalar_type: ScalarType
     negated: bool
-    assignable: bool
+    named: bool
 
     def __init__(self, component_types: List[ScalarType], negated: bool, assignable: bool):
         """
@@ -27,10 +27,15 @@ class Value:
         self.num_components = len(component_types)
         self.scalar_type = get_least_permissive_container_type(*component_types)
         self.negated = negated
-        self.assignable = assignable
+        self.named = assignable
 
     def get_var_name(self) -> Optional[VarNameBase]:
         return None
+
+    def set_var_name(self, new_name: VarNameBase):
+        if self.named:
+            raise NotImplementedError()
+        raise DXBCError("Can't set name for an unnamed value")
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):
@@ -39,7 +44,7 @@ class Value:
         return (self.num_components == other.num_components
                 and self.scalar_type == other.scalar_type
                 and self.negated == other.negated
-                and self.assignable == other.assignable)
+                and self.named == other.named)
 
     def get_output_mask(self) -> Tuple[bool, bool, bool, bool]:
         raise NotImplementedError()
@@ -70,7 +75,7 @@ class VectorValueBase(Value, ABC):
             raise DXBCError("Tried to make a Vector with >4 values")
         if len(scalar_values) < 2:
             raise DXBCError("Tried to make a Vector with <2 values")
-        super().__init__([x.scalar_type for x in scalar_values], negated, all(x.assignable for x in scalar_values))
+        super().__init__([x.scalar_type for x in scalar_values], negated, all(x.named for x in scalar_values))
         self.scalar_values = scalar_values
 
     def __eq__(self, other):

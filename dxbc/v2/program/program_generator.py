@@ -55,11 +55,22 @@ class ProgramGenerator:
                 if output_value:
                     new_variable = self.update_state(function, input_vals, output_value, current_state)
 
-                def apply_remap(value: Value, state: ExecutionState):
-                    if isinstance(value, SingleVectorComponent):
-                        name = copy(state.get_name(ScalarID(value), value))
-                        name.negated = value.negated
-                        return name
+                def apply_remap(value: Value, state: ExecutionState) -> Value:
+                    value = copy(value)
+                    if value.named:
+                        new_name = copy(value.get_var_name())
+                        if isinstance(new_name, IndexedVarName):
+                            new_name.indices = [apply_remap(x, state) for x in new_name.indices]
+                        value.set_var_name(new_name)
+
+                    if isinstance(value, (SingleVectorComponent, ScalarVariable)):
+                        new_value = copy(state.get_name(ScalarID(value), value))
+                        new_value.negated = value.negated
+                        return new_value
+                    elif isinstance(value, ScalarVariable):
+                        new_value = copy(state.get_name(ScalarID(value), value))
+                        new_value.negated = value.negated
+                        return new_value
                     elif isinstance(value, SwizzledVectorValue):
                         return VectorValue([state.get_name(ScalarID(comp), comp) for comp in value.scalar_values],
                                            value.negated)

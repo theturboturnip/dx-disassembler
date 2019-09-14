@@ -55,13 +55,16 @@ class ScalarVariable(ScalarValueBase):
                 and self.scalar_name == other.scalar_name)
 
     def __repr__(self):
-        return f"ScalarVariable {self.scalar_type} {self.negated} {self.scalar_name} w:{self.assignable} d:{self.num_components}"
+        return f"ScalarVariable {self.scalar_type} {self.negated} {self.scalar_name} w:{self.named} d:{self.num_components}"
 
     def disassemble(self, type_length: int = -1):
         return "{}{}".format("-" if self.negated else "", self.scalar_name)
 
     def get_var_name(self) -> VarNameBase:
         return self.scalar_name
+
+    def set_var_name(self, new_name: VarNameBase):
+        self.scalar_name = new_name
 
 class SingleVectorComponent(ScalarValueBase):
     vector_name: VarNameBase
@@ -83,6 +86,8 @@ class SingleVectorComponent(ScalarValueBase):
 
     def get_var_name(self) -> VarNameBase:
         return self.vector_name
+    def set_var_name(self, new_name: VarNameBase):
+        self.vector_name = new_name
 
     def disassemble(self, type_length: int = -1):
         return "{}{}.{}".format("-" if self.negated else "", self.vector_name, self.component_name.name)
