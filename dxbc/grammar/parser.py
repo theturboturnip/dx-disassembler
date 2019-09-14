@@ -132,11 +132,8 @@ class DisassemblyParser(DXBCListener):
         walker = ParseTreeWalker()
         walker.walk(self, tree)
 
-        #print(self.declarations)
-
     def enterConfigured_declaration(self, ctx:DXBCParser.Configured_declarationContext):
         decl_name = decl_name_str_map[str(ctx.DECL_NAME())]
-        #print(f"\nconfigured decl name: {DeclName(decl_name).name}")
 
         config = parse_value(ctx.brace_list_or_val())
         value_list = [parse_value(value_ctx) for value_ctx in ctx.value()]
@@ -144,7 +141,6 @@ class DisassemblyParser(DXBCListener):
 
     def enterSimple_declaration(self, ctx:DXBCParser.Simple_declarationContext):
         decl_name = decl_name_str_map[str(ctx.DECL_NAME())]
-        #print(f"\nsimple decl name: {DeclName(decl_name).name}")
 
         if decl_name is DeclName.ImmediateBufferToken:
             self.declarations.icb_buffers.append(parse_brace_list(ctx.brace_list_or_val()))
@@ -157,8 +153,6 @@ class DisassemblyParser(DXBCListener):
         if len(self.instructions) != instr_idx:
             raise DXBCError(f"Expected instruction #{len(self.instructions)}, got #{instr_idx}")
         instr_name = str(ctx.instruction_name().getText())
-        #print(f"\ninstr name: {instr_name}")
         value_list = [parse_value(value_ctx) for value_ctx in ctx.value()]
-        #print(f"values: {value_list}")
         self.instructions.append((instr_name, value_list))
 

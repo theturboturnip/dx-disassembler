@@ -9,7 +9,7 @@ pg = ProgramGenerator()
 program = pg.build_program(dp.declarations, dp.instructions)
 #print(dp.declarations[DeclName.TypedPSInput])
 #print(dp.declarations[DeclName.UntypedInput])
-print(program.get_disassembled_shader())
+#print(program.get_disassembled_shader())
 
 flags = (1 << 11) | (1 << 21) | (1 << 15)
 compile_bytes = compile_shader(program.get_disassembled_shader(), "DISASSEMBLED_SHADER", flags)

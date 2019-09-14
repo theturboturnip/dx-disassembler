@@ -10,38 +10,44 @@ class ID3D_Include(ctypes.Structure):
 
 
 """typedef struct ID3D10BlobVtbl
-    {
-        BEGIN_INTERFACE
+{
+    BEGIN_INTERFACE
 
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            ID3D10Blob * This,
-            /* [in] */ REFIID riid,
-            /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
+    HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+        ID3D10Blob * This,
+        /* [in] */ REFIID riid,
+        /* [annotation][iid_is][out] */ 
+        _COM_Outptr_  void **ppvObject);
 
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            ID3D10Blob * This);
+    ULONG ( STDMETHODCALLTYPE *AddRef )( 
+        ID3D10Blob * This);
 
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            ID3D10Blob * This);
+    ULONG ( STDMETHODCALLTYPE *Release )( 
+        ID3D10Blob * This);
 
-        LPVOID ( STDMETHODCALLTYPE *GetBufferPointer )( 
-            ID3D10Blob * This);
+    LPVOID ( STDMETHODCALLTYPE *GetBufferPointer )( 
+        ID3D10Blob * This);
 
-        SIZE_T ( STDMETHODCALLTYPE *GetBufferSize )( 
-            ID3D10Blob * This);
+    SIZE_T ( STDMETHODCALLTYPE *GetBufferSize )( 
+        ID3D10Blob * This);
 
-        END_INTERFACE
-    } ID3D10BlobVtbl;
+    END_INTERFACE
+} ID3D10BlobVtbl;
 
-    interface ID3D10Blob
-    {
-        CONST_VTBL struct ID3D10BlobVtbl *lpVtbl;
-    };"""
+interface ID3D10Blob
+{
+    CONST_VTBL struct ID3D10BlobVtbl *lpVtbl;
+};"""
 
 
 class ID3D10Blob(ctypes.Structure):
     pass
+
+def blob_to_bytes(blob: ctypes.POINTER(ID3D10Blob)) -> bytes:
+    blob_ptr = ctypes.cast(blob.contents.vtable.contents.GetBufferPointer(blob), ctypes.POINTER(ctypes.c_byte))
+    blob_size = blob.contents.vtable.contents.GetBufferSize(blob)
+    bytes_array = (ctypes.c_byte * blob_size).from_address(ctypes.cast(blob_ptr, ctypes.c_void_p).value)
+    return bytes(bytes_array)
 
 
 class ID3D10Blob_VTable(ctypes.Structure):

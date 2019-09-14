@@ -154,7 +154,6 @@ f"""struct {struct_name} {{
         return f"{type_name} {value_names};"
 
     def create_constant_buffer_decl(self, decl: Declaration):
-        print(decl)
         cb_name = decl.value_list[0].scalar_name
         type_str = get_type_string(self.initial_state.get_type_for_either_name(cb_name),
                                    self.initial_state.get_vector_length(cb_name, 4))

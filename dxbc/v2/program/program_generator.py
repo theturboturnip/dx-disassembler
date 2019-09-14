@@ -188,7 +188,6 @@ class ProgramGenerator:
             arg_values = decl.value_list
             if (len(arg_values) == 0
                     or not isinstance(arg_values[0], ImmediateScalar)):
-                print(arg_values)
                 raise DXBCError(
                     f"Expected register count to be an immediate, got '{arg_values}'")
             register_count = arg_values[0].value
