@@ -1,12 +1,12 @@
 from collections import Mapping
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Tuple
 
 from antlr4 import *
 
 from dxbc.Errors import DXBCError
 from dxbc.v2.Definitions import VectorComponent
 from dxbc.v2.Types import ScalarType
-from dxbc.v2.program.decl_name import DeclName, DeclStorage
+from dxbc.v2.program.decl_name import DeclName, DeclStorage, Declaration
 from dxbc.v2.values import *
 from dxbc.v2.values.brace_list import BraceList
 from .antlr_files.DXBCListener import DXBCListener
@@ -72,7 +72,7 @@ def parse_scalar(scalar_ctx: Union[DXBCParser.Scalar_valueContext], negated:bool
         )
     raise DXBCError(f"Unknown scalar_ctx type: {type(scalar_ctx)}")
 
-def parse_vector(vector_ctx: DXBCParser.Vector_valueContext, negated:bool):
+def parse_vector(vector_ctx: DXBCParser.Vector_valueContext, negated:bool) -> Value:
     scalar_components = []
     if vector_ctx.swizzled_vector_variable():
         vector_components = str(vector_ctx.swizzled_vector_variable().swizzle_components().COMPONENT_STR())
@@ -88,6 +88,8 @@ def parse_vector(vector_ctx: DXBCParser.Vector_valueContext, negated:bool):
         ]
     elif vector_ctx.immediate_vector():
         scalar_components = [parse_component_value(component_value) for component_value in vector_ctx.immediate_vector().component_value()]
+        if len(scalar_components) == 1:
+            return scalar_components[0]
 
     return VectorValue(scalar_components, negated)
 
@@ -115,6 +117,7 @@ def parse_value(value_ctx: Union[DXBCParser.Brace_list_or_valContext, DXBCParser
 
 class DisassemblyParser(DXBCListener):
     declarations: DeclStorage
+    instructions: List[Tuple[str, List[Value]]]
 
     def __init__(self, str_data: str):
         input_stream = InputStream(str_data)
@@ -124,31 +127,38 @@ class DisassemblyParser(DXBCListener):
         tree = parser.dxbc_file()
 
         self.declarations = DeclStorage()
+        self.instructions = []
 
         walker = ParseTreeWalker()
         walker.walk(self, tree)
 
-        print(self.declarations)
+        #print(self.declarations)
 
-    def enterDeclaration(self, ctx: DXBCParser.DeclarationContext):
+    def enterConfigured_declaration(self, ctx:DXBCParser.Configured_declarationContext):
         decl_name = decl_name_str_map[str(ctx.DECL_NAME())]
-        print(f"\ndecl name: {DeclName(decl_name).name}")
-        #print(f"first argument: {ctx.brace_list_or_val().getText()}")
+        #print(f"\nconfigured decl name: {DeclName(decl_name).name}")
+
+        config = parse_value(ctx.brace_list_or_val())
+        value_list = [parse_value(value_ctx) for value_ctx in ctx.value()]
+        self.declarations[decl_name].append(Declaration(config, value_list))
+
+    def enterSimple_declaration(self, ctx:DXBCParser.Simple_declarationContext):
+        decl_name = decl_name_str_map[str(ctx.DECL_NAME())]
+        #print(f"\nsimple decl name: {DeclName(decl_name).name}")
 
         if decl_name is DeclName.ImmediateBufferToken:
-            self.declarations[decl_name].append(parse_brace_list(ctx.brace_list_or_val()))
-        elif decl_name is DeclName.TextureToken:
-            # Ignore the first argument, as it has a bunch of types we don't care about right now
-            self.declarations[decl_name].append([parse_value(value_ctx) for value_ctx in ctx.value()])
+            self.declarations.icb_buffers.append(parse_brace_list(ctx.brace_list_or_val()))
         else:
             value_list = [parse_value(ctx.brace_list_or_val())] + [parse_value(value_ctx) for value_ctx in ctx.value()]
-            self.declarations[decl_name].append(value_list)
-        #print(f"value count: {len(value_tokens)}")
-        #print(f"values: {[v.getText() for v in value_tokens]}")
-        pass
-
-    def exitDeclaration(self, ctx: DXBCParser.DeclarationContext):
-        pass
+            self.declarations[decl_name].append(Declaration(None, value_list))
 
     def enterInstruction(self, ctx: DXBCParser.InstructionContext):
-        pass
+        instr_idx = int(ctx.INT_IMMEDIATE_SCALAR().getText())
+        if len(self.instructions) != instr_idx:
+            raise DXBCError(f"Expected instruction #{len(self.instructions)}, got #{instr_idx}")
+        instr_name = str(ctx.instruction_name().getText())
+        #print(f"\ninstr name: {instr_name}")
+        value_list = [parse_value(value_ctx) for value_ctx in ctx.value()]
+        #print(f"values: {value_list}")
+        self.instructions.append((instr_name, value_list))
+

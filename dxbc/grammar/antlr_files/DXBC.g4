@@ -27,7 +27,6 @@ COMPONENT_STR: COMPONENT+;
 
 DECL_NAME: 'dcl_' ID;
 ID: ALPHA ALPHANUM+;
-INSTRUCTION_START: DIGIT+ ':';
 DOT: '.';
 
 COMMA_SEP: ' '* ',' ' '*;
@@ -36,6 +35,7 @@ COMMA_SEP: ' '* ',' ' '*;
 VECTOR_OPEN: 'l'? '(';
 VECTOR_CLOSE: ')';
 
+INSTRUCTION_LINE_SEP: ':';
 
 HEX_IMMEDIATE_SCALAR: '0x' HEXDIGIT+;
 INT_IMMEDIATE_SCALAR: DIGIT+;
@@ -47,15 +47,14 @@ shader_name: SHADER_TAG;
 
 
 declarations: declaration (NEWLINE declaration)*;
-declaration: 
-	DECL_NAME brace_list_or_val (COMMA_SEP value)*
-	| DECL_NAME brace_list_or_val value (COMMA_SEP value)*
-	;
+declaration: simple_declaration | configured_declaration;
+simple_declaration:     DECL_NAME brace_list_or_val       (COMMA_SEP value)*;
+configured_declaration: DECL_NAME brace_list_or_val value (COMMA_SEP value)*;
 
 instructions: instruction (NEWLINE instruction)*;
 instruction:
-	INSTRUCTION_START instruction_name
-	| INSTRUCTION_START instruction_name value (COMMA_SEP value)*;
+	INT_IMMEDIATE_SCALAR INSTRUCTION_LINE_SEP instruction_name
+	| INT_IMMEDIATE_SCALAR INSTRUCTION_LINE_SEP instruction_name value (COMMA_SEP value)*;
 	
 instruction_name: ID | SAMPLE_INDEXABLE_TOKEN;
 

@@ -95,14 +95,15 @@ class ProgramGenerator:
 
         icb_contents = None
 
-        for x in decl_data[DeclName.ImmediateBufferToken]:
+        for x in decl_data.icb_buffers:
             # TODO: Assume immediate constant buffer is float4x4
             initial_types[VarNameBase("icb")] = ScalarType.Float
             initial_vector_state[VarNameBase("icb")] = 4
             icb_contents = x.str_data
             break  # Only expect one
 
-        for arg_values in decl_data[DeclName.ConstantBufferToken]:
+        for decl in decl_data[DeclName.ConstantBufferToken]:
+            arg_values = decl.value_list
             if (len(arg_values) == 0
                     or not isinstance(arg_values[0], ScalarVariable)
                     or not isinstance(arg_values[0].scalar_name, IndexedVarName)):
@@ -112,7 +113,8 @@ class ProgramGenerator:
             initial_types[base_name] = ScalarType.Float
             initial_vector_state[base_name] = 4
 
-        for arg_values in (decl_data[DeclName.SamplerToken] + decl_data[DeclName.TextureToken]):
+        for decl in (decl_data[DeclName.SamplerToken] + decl_data[DeclName.TextureToken]):
+            arg_values = decl.value_list
             if (len(arg_values) == 0
                     or not isinstance(arg_values[0], ScalarVariable)
                     or not type(arg_values[0].scalar_name) == VarNameBase):
@@ -125,13 +127,14 @@ class ProgramGenerator:
             else:
                 scalar_variable_names.append(base_name)
 
-        for arg_values in (decl_data[DeclName.TypedPSInput]
+        for decl in (decl_data[DeclName.TypedPSInput]
                            + decl_data[DeclName.UntypedInput]
                            + decl_data[DeclName.Output]):
+            arg_values = decl.value_list
             if len(arg_values) == 0:
                 raise DXBCError(
                     f"Expected argument after input/output declaration, got '{arg_values}'")
-            variable_value = arg_values[-1]
+            variable_value = arg_values[0]
 
             base_name: VarNameBase
             if isinstance(variable_value, ScalarVariable):
@@ -171,7 +174,8 @@ class ProgramGenerator:
         initial_state = ExecutionState(initial_scalar_types, initial_vector_state)
 
         registers = []
-        for arg_values in decl_data[DeclName.RegisterCount]:
+        for decl in decl_data[DeclName.RegisterCount]:
+            arg_values = decl.value_list
             if (len(arg_values) == 0
                     or not isinstance(arg_values[0], ImmediateScalar)):
                 print(arg_values)
