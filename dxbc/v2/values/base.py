@@ -2,7 +2,7 @@ from abc import ABC
 from typing import List, Tuple, Optional
 
 from dxbc.Errors import DXBCError
-from dxbc.v2.Types import get_least_permissive_container_type, ScalarType
+from dxbc.v2.types import get_least_permissive_container_type, ScalarType
 from dxbc.v2.values.var_names import VarNameBase
 
 

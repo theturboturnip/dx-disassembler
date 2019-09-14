@@ -1,7 +1,7 @@
 from typing import Optional, Union, List
 
-from dxbc.v2.Definitions import VectorComponent
-from dxbc.v2.Types import ScalarType
+from dxbc.v2.definitions import VectorComponent
+from dxbc.v2.types import ScalarType
 from dxbc.v2.program.actions.action import Action
 from dxbc.v2.program.decl_name import DeclStorage, DeclName, Declaration
 from dxbc.v2.program.state import ExecutionState

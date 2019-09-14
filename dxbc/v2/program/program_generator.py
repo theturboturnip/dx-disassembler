@@ -2,7 +2,7 @@ from copy import copy
 from itertools import chain
 from typing import Dict, List, Tuple, Sequence
 
-from dxbc.v2.Types import ScalarType
+from dxbc.v2.types import ScalarType
 from dxbc.v2.program.actions.action import Action
 from dxbc.v2.program.decl_name import DeclName, DeclStorage
 from dxbc.v2.program.functions import Function, TruncateToOutput, function_map

@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Union, List, Optional, Type, Tuple, Dict
 
 from dxbc.Errors import DXBCError
-from dxbc.v2.Types import VectorType, ScalarType, get_least_permissive_container_type
+from dxbc.v2.types import VectorType, ScalarType, get_least_permissive_container_type
 from dxbc.v2.program import state
 from dxbc.v2.program.state import ExecutionState
 from dxbc.v2.values import ScalarValueBase, Value, VectorValueBase, mask_components, trim_components, \

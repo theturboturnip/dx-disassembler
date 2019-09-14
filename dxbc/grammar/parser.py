@@ -4,8 +4,8 @@ from typing import List, Dict, Union, Tuple
 from antlr4 import *
 
 from dxbc.Errors import DXBCError
-from dxbc.v2.Definitions import VectorComponent
-from dxbc.v2.Types import ScalarType
+from dxbc.v2.definitions import VectorComponent
+from dxbc.v2.types import ScalarType
 from dxbc.v2.program.decl_name import DeclName, DeclStorage, Declaration
 from dxbc.v2.values import *
 from dxbc.v2.values.brace_list import BraceList

@@ -2,8 +2,8 @@ import copy
 import types
 
 from dxbc.Errors import DXBCError
-from dxbc.v2.Types import ScalarType
-from dxbc.v2.Definitions import VectorComponent
+from dxbc.v2.types import ScalarType
+from dxbc.v2.definitions import VectorComponent
 from dxbc.v2.values import ScalarValueBase, VarNameBase
 
 def cast_scalar(scalar: ScalarValueBase, scalar_type: ScalarType) -> ScalarValueBase:

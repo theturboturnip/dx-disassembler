@@ -1,7 +1,7 @@
 from typing import Union, Tuple, overload, Callable
 
 from dxbc.Errors import DXBCError
-from dxbc.v2.Types import ScalarType
+from dxbc.v2.types import ScalarType
 from dxbc.v2.values import ScalarValueBase, VectorValueBase, Value, VectorValue
 
 
