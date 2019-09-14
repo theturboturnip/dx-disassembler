@@ -9,10 +9,10 @@ pg = ProgramGenerator()
 print(pg.build_program(dp.declarations, dp.instructions).get_function_contents_hlsl())
 
 
-disassembler = Disassembler()
-disassembler.disassemble_file(instruction_str)
+#disassembler = Disassembler()
+#disassembler.disassemble_file(instruction_str)
 ##disassembler.disassemble_program_contents(instruction_str)
 ##print(disassembler.get_function_contents_hlsl(line_prefix="\t"))
-print(disassembler.program.get_function_contents_hlsl())
+#print(disassembler.program.get_function_contents_hlsl())
 
 # all the player character's thoughts

@@ -6,24 +6,6 @@ from dxbc.v2.Types import ScalarType
 from dxbc.v2.Definitions import VectorComponent
 from dxbc.v2.values import ScalarValueBase, VarNameBase
 
-
-"""class CastedScalar(ScalarValueBase):
-    origin_scalar: ScalarValueBase
-
-    def __init__(self, origin_scalar: ScalarValueBase, casted_type: ScalarType):
-        if casted_type == ScalarType.Untyped:
-            raise DXBCError("Can't cast to Untyped")
-        super().__init__(casted_type, False, assignable=origin_scalar.assignable)
-        self.origin_scalar = origin_scalar
-
-    def __repr__(self):
-        return f"CastedScalar {self.scalar_type} of ({self.origin_scalar})"
-
-    def __str__(self):
-        if self.scalar_type == self.origin_scalar.scalar_type or self.origin_scalar.scalar_type == ScalarType.Untyped:
-            return str(self.origin_scalar)
-        return f"({self.scalar_type.name()}){str(self.origin_scalar)}"
-"""
 def cast_scalar(scalar: ScalarValueBase, scalar_type: ScalarType) -> ScalarValueBase:
     scalar = copy.copy(scalar)
     scalar.scalar_type = scalar_type
@@ -40,7 +22,6 @@ def reinterpret_scalar(scalar: ScalarValueBase, scalar_type: ScalarType) -> Scal
                             {
                                 "__str__": lambda self: f"{scalar_type.name()}({old_str()})"
                             })
-    #scalar.__str__ = lambda self: f"({scalar_type.name()}){type(scalar).__str__(self)}"
     return scalar
 
 class ImmediateScalar(ScalarValueBase):

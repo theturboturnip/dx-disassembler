@@ -68,7 +68,7 @@ class SwizzledVectorValue(VectorValueBase):
                 return "{}{}".format("-" if self.negated else "", self.vector_name)
         if all(x == self.components[0] for x in self.components):
             return "{}{}.{}".format("-" if self.negated else "", self.vector_name, self.components[0].name)
-        return repr(self)
+        return "{}{}.{}".format("-" if self.negated else "", self.vector_name, "".join([x.name for x in self.components]))
 
 
 # When created, will return a SwizzledVectorValue if all arguments come from the same named vector.
