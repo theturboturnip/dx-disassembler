@@ -53,15 +53,6 @@ class DXBCListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by DXBCParser#configured_declaration.
-    def enterConfigured_declaration(self, ctx:DXBCParser.Configured_declarationContext):
-        pass
-
-    # Exit a parse tree produced by DXBCParser#configured_declaration.
-    def exitConfigured_declaration(self, ctx:DXBCParser.Configured_declarationContext):
-        pass
-
-
     # Enter a parse tree produced by DXBCParser#instructions.
     def enterInstructions(self, ctx:DXBCParser.InstructionsContext):
         pass

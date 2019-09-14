@@ -20,7 +20,9 @@ class ProgramGenerator:
     registers: List[str] = []
 
     def build_program(self, decl_data: DeclStorage,
-                      instr_data: Sequence[Tuple[str, List[Value]]]) -> 'Program':
+                      instr_data: Sequence[Tuple[str, List[Value]]],
+                      input_semantics: List[str],
+                      output_semantics: List[str]) -> 'Program':
         initial_state, self.registers, icb_contents = self.generate_initial_state(decl_data)
 
         current_tick: int = 0
@@ -95,7 +97,7 @@ class ProgramGenerator:
 
             current_tick += 1
 
-        return Program(decl_data, initial_state, actions)
+        return Program(decl_data, initial_state, actions, input_semantics, output_semantics)
 
     @staticmethod
     def generate_initial_state(decl_data: DeclStorage) -> Tuple[ExecutionState, List[str], str]:
@@ -119,7 +121,7 @@ class ProgramGenerator:
                     or not isinstance(arg_values[0].scalar_name, IndexedVarName)):
                 raise DXBCError(
                     f"Expected constant buffer token to be of the form 'name[length]', got '{arg_values}'")
-            base_name = arg_values[0].scalar_name.as_base()
+            base_name = VarNameBase(arg_values[0].scalar_name.as_base().name.lower())
             initial_types[base_name] = ScalarType.Float
             initial_vector_state[base_name] = 4
 

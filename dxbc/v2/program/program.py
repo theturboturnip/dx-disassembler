@@ -15,6 +15,8 @@ specifiers = {
 
 class Program:
     declarations: DeclStorage
+    input_semantics: List[str]
+    output_semantics: List[str]
 
     initial_state: ExecutionState
     actions: List[Action]
@@ -23,10 +25,12 @@ class Program:
 
     icb_contents: str
 
-    def __init__(self, declarations: DeclStorage, initial_state: ExecutionState, actions: List[Action]):
+    def __init__(self, declarations: DeclStorage, initial_state: ExecutionState, actions: List[Action], input_semantics: List[str], output_semantics: List[str]):
         self.declarations = declarations
         self.initial_state = initial_state
         self.actions = actions
+        self.input_semantics = input_semantics
+        self.output_semantics = output_semantics
 
     def get_disassembled_shader(self) -> str:
         return "\n".join([self.get_macros(), "", self.get_declaration_hlsl(), self.get_main_function_hlsl()])
@@ -109,31 +113,24 @@ return output;""".replace("\n", f"\n{line_prefix}")
 
     def get_macros(self) -> str:
         return \
-"""#define DISCARD_NZ(X) do { if (X != 0){ discard; } } while(0);
+"""#define DISCARD_NZ(X) if (X != 0){ discard; };
 inline uint BITRANGE_INSERT(uint width, uint offset, uint src, uint dest)
 {
     uint mask = (0xffffffff >> (32 - width)) << offset;
     return ((src << offset) & mask) | (dest & ~mask);
 }"""
 
-    def create_struct_def(self, struct_name: str, decls: List[Declaration], as_output: bool = False)-> str:
+    def create_struct_def(self, struct_name: str, decls: List[Declaration], semantics: List[str], as_output: bool = False)-> str:
         decls = sorted(decls, key=lambda x: x.value_list[0].get_var_name().name)
 
         member_strs: List[str] = []
-        for i in decls:
+        for i, decl in enumerate(decls):
             member_prefix = ""
-            if isinstance(i.config, ScalarVariable) and i.config.scalar_name.name == "linearCentroid":
+            if len(decl.config_list) and isinstance(decl.config_list[0], ScalarVariable) and decl.config_list[0].scalar_name.name == "linearCentroid":
                 member_prefix = "linear centroid "
-            member_vec: Union[SwizzledVectorValue, SingleVectorComponent, ScalarVariable] = i.value_list[0]
+            member_vec: Union[SwizzledVectorValue, SingleVectorComponent, ScalarVariable] = decl.value_list[0]
             member_name = member_vec.get_var_name()
-            output_decl = ""
-            if len(i.value_list) > 1:
-                output_name = i.value_list[1].scalar_name.name
-                output_decl = f": {specifiers[output_name]}"
-            elif member_name.name == "vCoverageMask" or member_name.name == "oMask":
-                output_decl = ": SV_Coverage"
-            elif as_output:
-                output_decl = ": SV_Output"
+            output_decl = f": {semantics[i]}"
 
             type_str = get_type_string(self.initial_state.get_type_for_either_name(member_name),
                                        self.initial_state.get_vector_length(member_vec, 1))
@@ -154,10 +151,10 @@ f"""struct {struct_name} {{
         return f"{type_name} {value_names};"
 
     def create_constant_buffer_decl(self, decl: Declaration):
-        cb_name = decl.value_list[0].scalar_name
+        cb_name = IndexedVarName(decl.value_list[0].scalar_name.name.lower(), decl.value_list[0].scalar_name.indices)
         type_str = get_type_string(self.initial_state.get_type_for_either_name(cb_name),
                                    self.initial_state.get_vector_length(cb_name, 4))
-        register = int(cb_name.name.replace("cb", ""))
+        register = int(cb_name.name.lower().replace("cb", ""))
         return \
 f"""cbuffer {cb_name.name} : register(b{register})
 {{
@@ -166,9 +163,9 @@ f"""cbuffer {cb_name.name} : register(b{register})
 
     def get_declaration_hlsl(self, line_prefix: str = "", input_struct_name: str = "INPUT", output_struct_name: str = "OUTPUT") -> str:
         input_struct = self.create_struct_def(
-            input_struct_name, self.declarations[DeclName.TypedPSInput] + self.declarations[DeclName.UntypedInput])
+            input_struct_name, self.declarations[DeclName.TypedPSInput] + self.declarations[DeclName.UntypedInput], self.input_semantics)
         output_struct = self.create_struct_def(
-            output_struct_name, self.declarations[DeclName.Output], True)
+            output_struct_name, self.declarations[DeclName.Output], self.output_semantics, True)
 
         texture_decls = self.create_variable_decls(self.declarations[DeclName.TextureToken], "Texture2D")
         sampler_decls = self.create_variable_decls(self.declarations[DeclName.SamplerToken], "SamplerState")

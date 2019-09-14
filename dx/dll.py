@@ -20,3 +20,15 @@ d3d11_compile_shader_proto = ctypes.WINFUNCTYPE(
     ctypes.POINTER(ctypes.POINTER(ID3D10Blob)),  # error data blob
 )
 d3d11_compile_shader = d3d11_compile_shader_proto(("D3DCompile", d3d11compiler_lib))
+
+d3d11_disassemble_shader_proto = ctypes.WINFUNCTYPE(
+    ctypes.HRESULT,
+
+    ctypes.c_void_p,  # pSrcData
+    ctypes.c_size_t,  # SrcDataSize
+    ctypes.c_uint,   # Flags
+    ctypes.c_char_p,  # szComments
+
+    ctypes.POINTER(ctypes.POINTER(ID3D10Blob)),  # disassembly blob
+)
+d3d11_disassemble_shader = d3d11_disassemble_shader_proto(("D3DDisassemble", d3d11compiler_lib))

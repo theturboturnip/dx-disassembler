@@ -17,7 +17,7 @@ class DeclName(IntEnum):
     Output = 7,
     RegisterCount = 8
 
-Declaration = collections.namedtuple("declaration", "config value_list")
+Declaration = collections.namedtuple("declaration", "config_list value_list")
 
 class DeclStorage:
     normal_storage: Dict[DeclName, List[Declaration]] = {

@@ -1,0 +1,7 @@
+COMMENT_START=1
+WS=2
+NEWLINE=3
+ID=4
+SEP=5
+'//'=1
+'\n'=3

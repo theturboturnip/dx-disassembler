@@ -34,11 +34,6 @@ class DXBCVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by DXBCParser#configured_declaration.
-    def visitConfigured_declaration(self, ctx:DXBCParser.Configured_declarationContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by DXBCParser#instructions.
     def visitInstructions(self, ctx:DXBCParser.InstructionsContext):
         return self.visitChildren(ctx)

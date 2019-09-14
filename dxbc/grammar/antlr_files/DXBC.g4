@@ -6,6 +6,8 @@ fragment HEXDIGIT: DIGIT | 'a'..'f' | 'A'..'F';
 fragment ALPHA: 'a'..'z' | 'A'..'Z';
 fragment ALPHANUM: ALPHA | DIGIT | '_';
 
+LINE_COMMENT: '//' ~('\n')* -> skip;
+
 SAMPLE_INDEXABLE_TOKEN: 'sample_indexable(texture2d)(float,float,float,float)';
 
 BRACE_OPEN: '{';
@@ -41,15 +43,16 @@ HEX_IMMEDIATE_SCALAR: '0x' HEXDIGIT+;
 INT_IMMEDIATE_SCALAR: DIGIT+;
 FLOAT_IMMEDIATE_SCALAR: DIGIT+ '.' DIGIT+;
 
-dxbc_file: (NEWLINE | WS)* shader_name NEWLINE declarations NEWLINE instructions EOF;
+dxbc_file: (NEWLINE | WS)* shader_name NEWLINE declarations NEWLINE instructions NEWLINE* EOF;
 
 shader_name: SHADER_TAG;
 
 
 declarations: declaration (NEWLINE declaration)*;
-declaration: simple_declaration | configured_declaration;
-simple_declaration:     DECL_NAME brace_list_or_val       (COMMA_SEP value)*;
-configured_declaration: DECL_NAME brace_list_or_val value (COMMA_SEP value)*;
+declaration: simple_declaration;
+simple_declaration: DECL_NAME brace_list_or_val* value (COMMA_SEP value)*;
+
+//value_chain: ;
 
 instructions: instruction (NEWLINE instruction)*;
 instruction:
