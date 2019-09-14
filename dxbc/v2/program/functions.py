@@ -56,7 +56,7 @@ class TextureArgumentTruncation(NonNullArgumentTruncation):
     def truncate_args(self, input_args: List[GenericValue], output_arg: GenericValue):
         return [
             trim_components(input_args[0], 2),
-            trim_components(input_args[1], 1),
+            mask_components(input_args[1], output_arg.get_output_mask()),
             trim_components(input_args[2], 1),
         ]
 
@@ -145,7 +145,7 @@ class TextureSampleFunction(Function, TextureArgumentTruncation):
 
     def disassemble_call(self, input_args: List[Value], current_state: ExecutionState):
         casted_input_args = self.get_input_strings(input_args, self.determine_typehole_type(input_args), current_state)
-        return "{1}.Sample({2}, {0})".format(casted_input_args[0], casted_input_args[1], casted_input_args[2])
+        return "{1}.Sample({2}, {0}).{3}".format(casted_input_args[0], casted_input_args[1], casted_input_args[2], input_args[1].get_component_str())
 
 #class BitfieldInsertFunction(Function):
 #    def disassemble_call(self, input_args: List[Value]):

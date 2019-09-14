@@ -65,13 +65,16 @@ class SwizzledVectorValue(VectorValueBase):
     def get_var_name(self) -> VarNameBase:
         return self.vector_name
 
+    def get_component_str(self):
+        return "".join(x.name for x in self.components)
+
     def disassemble(self, type_length: int = -1):
         if type_length == self.num_components:
             if all(x == i for i, x in enumerate(self.components)):
                 return "{}{}".format("-" if self.negated else "", self.vector_name)
         if all(x == self.components[0] for x in self.components):
             return "{}{}.{}".format("-" if self.negated else "", self.vector_name, self.components[0].name)
-        return "{}{}.{}".format("-" if self.negated else "", self.vector_name, "".join([x.name for x in self.components]))
+        return "{}{}.{}".format("-" if self.negated else "", self.vector_name, self.get_component_str())
 
 
 # When created, will return a SwizzledVectorValue if all arguments come from the same named vector.
