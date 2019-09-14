@@ -6,7 +6,7 @@ from shader_source import ps_instruction_str as instruction_str
 
 dp = DisassemblyParser(instruction_str)
 pg = ProgramGenerator()
-program = pg.build_program(dp.declarations, dp.instructions)
+program = pg.build_program(dp.declarations, dp.instructions, dp.input_semantics, dp.output_semantics)
 #print(dp.declarations[DeclName.TypedPSInput])
 #print(dp.declarations[DeclName.UntypedInput])
 #print(program.get_disassembled_shader())

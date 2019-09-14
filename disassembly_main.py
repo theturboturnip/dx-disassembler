@@ -9,7 +9,7 @@ with open(path, "rb") as f:
     shader_bytes = f.read()
 
 shader_assembly = decompile_shader(shader_bytes)
-#print(shader_assembly)
+print(shader_assembly)
 dp = DisassemblyParser(shader_assembly)
 #print(dp.input_semantics)
 pg = ProgramGenerator()

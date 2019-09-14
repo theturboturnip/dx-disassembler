@@ -50,7 +50,8 @@ shader_name: SHADER_TAG;
 
 declarations: declaration (NEWLINE declaration)*;
 declaration: simple_declaration;
-simple_declaration: DECL_NAME brace_list_or_val* value (COMMA_SEP value)*;
+simple_declaration: DECL_NAME brace_list_or_val* value (COMMA_SEP value)*
+| DECL_NAME brace_list;
 
 //value_chain: ;
 

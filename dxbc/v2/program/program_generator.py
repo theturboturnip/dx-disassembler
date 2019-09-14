@@ -101,6 +101,8 @@ class ProgramGenerator:
 
     @staticmethod
     def generate_initial_state(decl_data: DeclStorage) -> Tuple[ExecutionState, List[str], str]:
+        # TODO Use semantics to determine input types/widths
+
         initial_types: Dict[VarNameBase, ScalarType] = {}
         initial_vector_state: Dict[VarNameBase, int] = {}
         scalar_variable_names: List[VarNameBase] = []

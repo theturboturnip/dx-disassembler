@@ -9,78 +9,81 @@ import sys
 def serializedATN():
     with StringIO() as buf:
         buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\33")
-        buf.write("\u00c3\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
+        buf.write("\u00c7\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
         buf.write("\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\4\16")
         buf.write("\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22\4\23\t\23")
         buf.write("\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\3\2")
         buf.write("\7\2\62\n\2\f\2\16\2\65\13\2\3\2\3\2\3\2\3\2\3\2\3\2\7")
         buf.write("\2=\n\2\f\2\16\2@\13\2\3\2\3\2\3\3\3\3\3\4\3\4\3\4\7\4")
         buf.write("I\n\4\f\4\16\4L\13\4\3\5\3\5\3\6\3\6\7\6R\n\6\f\6\16\6")
-        buf.write("U\13\6\3\6\3\6\3\6\7\6Z\n\6\f\6\16\6]\13\6\3\7\3\7\3\7")
-        buf.write("\7\7b\n\7\f\7\16\7e\13\7\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3")
-        buf.write("\b\3\b\7\bp\n\b\f\b\16\bs\13\b\5\bu\n\b\3\t\3\t\3\n\5")
-        buf.write("\nz\n\n\3\n\3\n\5\n~\n\n\3\13\3\13\3\13\5\13\u0083\n\13")
-        buf.write("\3\f\3\f\5\f\u0087\n\f\3\r\5\r\u008a\n\r\3\r\3\r\3\16")
-        buf.write("\3\16\3\17\3\17\3\17\3\20\3\20\3\20\3\21\3\21\3\21\3\22")
-        buf.write("\3\22\3\23\3\23\3\23\3\23\7\23\u009f\n\23\f\23\16\23\u00a2")
-        buf.write("\13\23\3\23\3\23\3\24\3\24\3\24\3\25\3\25\5\25\u00ab\n")
-        buf.write("\25\3\26\3\26\6\26\u00af\n\26\r\26\16\26\u00b0\3\26\3")
-        buf.write("\26\3\27\3\27\5\27\u00b7\n\27\3\30\3\30\3\30\3\30\6\30")
-        buf.write("\u00bd\n\30\r\30\16\30\u00be\3\30\3\30\3\30\2\2\31\2\4")
-        buf.write("\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\2\7\3\2\32")
-        buf.write("\33\4\2\5\5\21\21\3\2\t\n\3\2\27\31\4\2\r\r\23\23\2\u00be")
-        buf.write("\2\63\3\2\2\2\4C\3\2\2\2\6E\3\2\2\2\bM\3\2\2\2\nO\3\2")
-        buf.write("\2\2\f^\3\2\2\2\16t\3\2\2\2\20v\3\2\2\2\22y\3\2\2\2\24")
-        buf.write("\u0082\3\2\2\2\26\u0086\3\2\2\2\30\u0089\3\2\2\2\32\u008d")
-        buf.write("\3\2\2\2\34\u008f\3\2\2\2\36\u0092\3\2\2\2 \u0095\3\2")
-        buf.write("\2\2\"\u0098\3\2\2\2$\u009a\3\2\2\2&\u00a5\3\2\2\2(\u00a8")
-        buf.write("\3\2\2\2*\u00ac\3\2\2\2,\u00b6\3\2\2\2.\u00b8\3\2\2\2")
-        buf.write("\60\62\t\2\2\2\61\60\3\2\2\2\62\65\3\2\2\2\63\61\3\2\2")
-        buf.write("\2\63\64\3\2\2\2\64\66\3\2\2\2\65\63\3\2\2\2\66\67\5\4")
-        buf.write("\3\2\678\7\33\2\289\5\6\4\29:\7\33\2\2:>\5\f\7\2;=\7\33")
-        buf.write("\2\2<;\3\2\2\2=@\3\2\2\2><\3\2\2\2>?\3\2\2\2?A\3\2\2\2")
-        buf.write("@>\3\2\2\2AB\7\2\2\3B\3\3\2\2\2CD\7\16\2\2D\5\3\2\2\2")
-        buf.write("EJ\5\b\5\2FG\7\33\2\2GI\5\b\5\2HF\3\2\2\2IL\3\2\2\2JH")
-        buf.write("\3\2\2\2JK\3\2\2\2K\7\3\2\2\2LJ\3\2\2\2MN\5\n\6\2N\t\3")
-        buf.write("\2\2\2OS\7\20\2\2PR\5,\27\2QP\3\2\2\2RU\3\2\2\2SQ\3\2")
-        buf.write("\2\2ST\3\2\2\2TV\3\2\2\2US\3\2\2\2V[\5\22\n\2WX\7\23\2")
-        buf.write("\2XZ\5\22\n\2YW\3\2\2\2Z]\3\2\2\2[Y\3\2\2\2[\\\3\2\2\2")
-        buf.write("\\\13\3\2\2\2][\3\2\2\2^c\5\16\b\2_`\7\33\2\2`b\5\16\b")
-        buf.write("\2a_\3\2\2\2be\3\2\2\2ca\3\2\2\2cd\3\2\2\2d\r\3\2\2\2")
-        buf.write("ec\3\2\2\2fg\7\30\2\2gh\7\26\2\2hu\5\20\t\2ij\7\30\2\2")
-        buf.write("jk\7\26\2\2kl\5\20\t\2lq\5\22\n\2mn\7\23\2\2np\5\22\n")
-        buf.write("\2om\3\2\2\2ps\3\2\2\2qo\3\2\2\2qr\3\2\2\2ru\3\2\2\2s")
-        buf.write("q\3\2\2\2tf\3\2\2\2ti\3\2\2\2u\17\3\2\2\2vw\t\3\2\2w\21")
-        buf.write("\3\2\2\2xz\t\4\2\2yx\3\2\2\2yz\3\2\2\2z}\3\2\2\2{~\5\26")
-        buf.write("\f\2|~\5\24\13\2}{\3\2\2\2}|\3\2\2\2~\23\3\2\2\2\177\u0083")
-        buf.write("\5\32\16\2\u0080\u0083\5 \21\2\u0081\u0083\5\"\22\2\u0082")
-        buf.write("\177\3\2\2\2\u0082\u0080\3\2\2\2\u0082\u0081\3\2\2\2\u0083")
-        buf.write("\25\3\2\2\2\u0084\u0087\5$\23\2\u0085\u0087\5&\24\2\u0086")
-        buf.write("\u0084\3\2\2\2\u0086\u0085\3\2\2\2\u0087\27\3\2\2\2\u0088")
-        buf.write("\u008a\t\4\2\2\u0089\u0088\3\2\2\2\u0089\u008a\3\2\2\2")
-        buf.write("\u008a\u008b\3\2\2\2\u008b\u008c\5\24\13\2\u008c\31\3")
-        buf.write("\2\2\2\u008d\u008e\t\5\2\2\u008e\33\3\2\2\2\u008f\u0090")
-        buf.write("\7\22\2\2\u0090\u0091\7\3\2\2\u0091\35\3\2\2\2\u0092\u0093")
-        buf.write("\7\22\2\2\u0093\u0094\7\17\2\2\u0094\37\3\2\2\2\u0095")
-        buf.write("\u0096\5(\25\2\u0096\u0097\5\34\17\2\u0097!\3\2\2\2\u0098")
-        buf.write("\u0099\5(\25\2\u0099#\3\2\2\2\u009a\u009b\7\24\2\2\u009b")
-        buf.write("\u00a0\5\30\r\2\u009c\u009d\7\23\2\2\u009d\u009f\5\30")
-        buf.write("\r\2\u009e\u009c\3\2\2\2\u009f\u00a2\3\2\2\2\u00a0\u009e")
-        buf.write("\3\2\2\2\u00a0\u00a1\3\2\2\2\u00a1\u00a3\3\2\2\2\u00a2")
-        buf.write("\u00a0\3\2\2\2\u00a3\u00a4\7\25\2\2\u00a4%\3\2\2\2\u00a5")
-        buf.write("\u00a6\5(\25\2\u00a6\u00a7\5\36\20\2\u00a7\'\3\2\2\2\u00a8")
-        buf.write("\u00aa\7\21\2\2\u00a9\u00ab\5*\26\2\u00aa\u00a9\3\2\2")
-        buf.write("\2\u00aa\u00ab\3\2\2\2\u00ab)\3\2\2\2\u00ac\u00ae\7\13")
-        buf.write("\2\2\u00ad\u00af\5\30\r\2\u00ae\u00ad\3\2\2\2\u00af\u00b0")
-        buf.write("\3\2\2\2\u00b0\u00ae\3\2\2\2\u00b0\u00b1\3\2\2\2\u00b1")
-        buf.write("\u00b2\3\2\2\2\u00b2\u00b3\7\f\2\2\u00b3+\3\2\2\2\u00b4")
-        buf.write("\u00b7\5.\30\2\u00b5\u00b7\5\22\n\2\u00b6\u00b4\3\2\2")
-        buf.write("\2\u00b6\u00b5\3\2\2\2\u00b7-\3\2\2\2\u00b8\u00b9\7\7")
-        buf.write("\2\2\u00b9\u00bc\5,\27\2\u00ba\u00bb\t\6\2\2\u00bb\u00bd")
-        buf.write("\5,\27\2\u00bc\u00ba\3\2\2\2\u00bd\u00be\3\2\2\2\u00be")
-        buf.write("\u00bc\3\2\2\2\u00be\u00bf\3\2\2\2\u00bf\u00c0\3\2\2\2")
-        buf.write("\u00c0\u00c1\7\b\2\2\u00c1/\3\2\2\2\24\63>JS[cqty}\u0082")
-        buf.write("\u0086\u0089\u00a0\u00aa\u00b0\u00b6\u00be")
+        buf.write("U\13\6\3\6\3\6\3\6\7\6Z\n\6\f\6\16\6]\13\6\3\6\3\6\5\6")
+        buf.write("a\n\6\3\7\3\7\3\7\7\7f\n\7\f\7\16\7i\13\7\3\b\3\b\3\b")
+        buf.write("\3\b\3\b\3\b\3\b\3\b\3\b\7\bt\n\b\f\b\16\bw\13\b\5\by")
+        buf.write("\n\b\3\t\3\t\3\n\5\n~\n\n\3\n\3\n\5\n\u0082\n\n\3\13\3")
+        buf.write("\13\3\13\5\13\u0087\n\13\3\f\3\f\5\f\u008b\n\f\3\r\5\r")
+        buf.write("\u008e\n\r\3\r\3\r\3\16\3\16\3\17\3\17\3\17\3\20\3\20")
+        buf.write("\3\20\3\21\3\21\3\21\3\22\3\22\3\23\3\23\3\23\3\23\7\23")
+        buf.write("\u00a3\n\23\f\23\16\23\u00a6\13\23\3\23\3\23\3\24\3\24")
+        buf.write("\3\24\3\25\3\25\5\25\u00af\n\25\3\26\3\26\6\26\u00b3\n")
+        buf.write("\26\r\26\16\26\u00b4\3\26\3\26\3\27\3\27\5\27\u00bb\n")
+        buf.write("\27\3\30\3\30\3\30\3\30\6\30\u00c1\n\30\r\30\16\30\u00c2")
+        buf.write("\3\30\3\30\3\30\2\2\31\2\4\6\b\n\f\16\20\22\24\26\30\32")
+        buf.write("\34\36 \"$&(*,.\2\7\3\2\32\33\4\2\5\5\21\21\3\2\t\n\3")
+        buf.write("\2\27\31\4\2\r\r\23\23\2\u00c3\2\63\3\2\2\2\4C\3\2\2\2")
+        buf.write("\6E\3\2\2\2\bM\3\2\2\2\n`\3\2\2\2\fb\3\2\2\2\16x\3\2\2")
+        buf.write("\2\20z\3\2\2\2\22}\3\2\2\2\24\u0086\3\2\2\2\26\u008a\3")
+        buf.write("\2\2\2\30\u008d\3\2\2\2\32\u0091\3\2\2\2\34\u0093\3\2")
+        buf.write("\2\2\36\u0096\3\2\2\2 \u0099\3\2\2\2\"\u009c\3\2\2\2$")
+        buf.write("\u009e\3\2\2\2&\u00a9\3\2\2\2(\u00ac\3\2\2\2*\u00b0\3")
+        buf.write("\2\2\2,\u00ba\3\2\2\2.\u00bc\3\2\2\2\60\62\t\2\2\2\61")
+        buf.write("\60\3\2\2\2\62\65\3\2\2\2\63\61\3\2\2\2\63\64\3\2\2\2")
+        buf.write("\64\66\3\2\2\2\65\63\3\2\2\2\66\67\5\4\3\2\678\7\33\2")
+        buf.write("\289\5\6\4\29:\7\33\2\2:>\5\f\7\2;=\7\33\2\2<;\3\2\2\2")
+        buf.write("=@\3\2\2\2><\3\2\2\2>?\3\2\2\2?A\3\2\2\2@>\3\2\2\2AB\7")
+        buf.write("\2\2\3B\3\3\2\2\2CD\7\16\2\2D\5\3\2\2\2EJ\5\b\5\2FG\7")
+        buf.write("\33\2\2GI\5\b\5\2HF\3\2\2\2IL\3\2\2\2JH\3\2\2\2JK\3\2")
+        buf.write("\2\2K\7\3\2\2\2LJ\3\2\2\2MN\5\n\6\2N\t\3\2\2\2OS\7\20")
+        buf.write("\2\2PR\5,\27\2QP\3\2\2\2RU\3\2\2\2SQ\3\2\2\2ST\3\2\2\2")
+        buf.write("TV\3\2\2\2US\3\2\2\2V[\5\22\n\2WX\7\23\2\2XZ\5\22\n\2")
+        buf.write("YW\3\2\2\2Z]\3\2\2\2[Y\3\2\2\2[\\\3\2\2\2\\a\3\2\2\2]")
+        buf.write("[\3\2\2\2^_\7\20\2\2_a\5.\30\2`O\3\2\2\2`^\3\2\2\2a\13")
+        buf.write("\3\2\2\2bg\5\16\b\2cd\7\33\2\2df\5\16\b\2ec\3\2\2\2fi")
+        buf.write("\3\2\2\2ge\3\2\2\2gh\3\2\2\2h\r\3\2\2\2ig\3\2\2\2jk\7")
+        buf.write("\30\2\2kl\7\26\2\2ly\5\20\t\2mn\7\30\2\2no\7\26\2\2op")
+        buf.write("\5\20\t\2pu\5\22\n\2qr\7\23\2\2rt\5\22\n\2sq\3\2\2\2t")
+        buf.write("w\3\2\2\2us\3\2\2\2uv\3\2\2\2vy\3\2\2\2wu\3\2\2\2xj\3")
+        buf.write("\2\2\2xm\3\2\2\2y\17\3\2\2\2z{\t\3\2\2{\21\3\2\2\2|~\t")
+        buf.write("\4\2\2}|\3\2\2\2}~\3\2\2\2~\u0081\3\2\2\2\177\u0082\5")
+        buf.write("\26\f\2\u0080\u0082\5\24\13\2\u0081\177\3\2\2\2\u0081")
+        buf.write("\u0080\3\2\2\2\u0082\23\3\2\2\2\u0083\u0087\5\32\16\2")
+        buf.write("\u0084\u0087\5 \21\2\u0085\u0087\5\"\22\2\u0086\u0083")
+        buf.write("\3\2\2\2\u0086\u0084\3\2\2\2\u0086\u0085\3\2\2\2\u0087")
+        buf.write("\25\3\2\2\2\u0088\u008b\5$\23\2\u0089\u008b\5&\24\2\u008a")
+        buf.write("\u0088\3\2\2\2\u008a\u0089\3\2\2\2\u008b\27\3\2\2\2\u008c")
+        buf.write("\u008e\t\4\2\2\u008d\u008c\3\2\2\2\u008d\u008e\3\2\2\2")
+        buf.write("\u008e\u008f\3\2\2\2\u008f\u0090\5\24\13\2\u0090\31\3")
+        buf.write("\2\2\2\u0091\u0092\t\5\2\2\u0092\33\3\2\2\2\u0093\u0094")
+        buf.write("\7\22\2\2\u0094\u0095\7\3\2\2\u0095\35\3\2\2\2\u0096\u0097")
+        buf.write("\7\22\2\2\u0097\u0098\7\17\2\2\u0098\37\3\2\2\2\u0099")
+        buf.write("\u009a\5(\25\2\u009a\u009b\5\34\17\2\u009b!\3\2\2\2\u009c")
+        buf.write("\u009d\5(\25\2\u009d#\3\2\2\2\u009e\u009f\7\24\2\2\u009f")
+        buf.write("\u00a4\5\30\r\2\u00a0\u00a1\7\23\2\2\u00a1\u00a3\5\30")
+        buf.write("\r\2\u00a2\u00a0\3\2\2\2\u00a3\u00a6\3\2\2\2\u00a4\u00a2")
+        buf.write("\3\2\2\2\u00a4\u00a5\3\2\2\2\u00a5\u00a7\3\2\2\2\u00a6")
+        buf.write("\u00a4\3\2\2\2\u00a7\u00a8\7\25\2\2\u00a8%\3\2\2\2\u00a9")
+        buf.write("\u00aa\5(\25\2\u00aa\u00ab\5\36\20\2\u00ab\'\3\2\2\2\u00ac")
+        buf.write("\u00ae\7\21\2\2\u00ad\u00af\5*\26\2\u00ae\u00ad\3\2\2")
+        buf.write("\2\u00ae\u00af\3\2\2\2\u00af)\3\2\2\2\u00b0\u00b2\7\13")
+        buf.write("\2\2\u00b1\u00b3\5\30\r\2\u00b2\u00b1\3\2\2\2\u00b3\u00b4")
+        buf.write("\3\2\2\2\u00b4\u00b2\3\2\2\2\u00b4\u00b5\3\2\2\2\u00b5")
+        buf.write("\u00b6\3\2\2\2\u00b6\u00b7\7\f\2\2\u00b7+\3\2\2\2\u00b8")
+        buf.write("\u00bb\5.\30\2\u00b9\u00bb\5\22\n\2\u00ba\u00b8\3\2\2")
+        buf.write("\2\u00ba\u00b9\3\2\2\2\u00bb-\3\2\2\2\u00bc\u00bd\7\7")
+        buf.write("\2\2\u00bd\u00c0\5,\27\2\u00be\u00bf\t\6\2\2\u00bf\u00c1")
+        buf.write("\5,\27\2\u00c0\u00be\3\2\2\2\u00c1\u00c2\3\2\2\2\u00c2")
+        buf.write("\u00c0\3\2\2\2\u00c2\u00c3\3\2\2\2\u00c3\u00c4\3\2\2\2")
+        buf.write("\u00c4\u00c5\7\b\2\2\u00c5/\3\2\2\2\25\63>JS[`gux}\u0081")
+        buf.write("\u0086\u008a\u008d\u00a4\u00ae\u00b4\u00ba\u00c2")
         return buf.getvalue()
 
 
@@ -475,6 +478,10 @@ class DXBCParser ( Parser ):
             else:
                 return self.getToken(DXBCParser.COMMA_SEP, i)
 
+        def brace_list(self):
+            return self.getTypedRuleContext(DXBCParser.Brace_listContext,0)
+
+
         def getRuleIndex(self):
             return DXBCParser.RULE_simple_declaration
 
@@ -501,33 +508,48 @@ class DXBCParser ( Parser ):
         self.enterRule(localctx, 8, self.RULE_simple_declaration)
         self._la = 0 # Token type
         try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 77
-            self.match(DXBCParser.DECL_NAME)
-            self.state = 81
+            self.state = 94
             self._errHandler.sync(self)
-            _alt = self._interp.adaptivePredict(self._input,3,self._ctx)
-            while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
-                if _alt==1:
-                    self.state = 78
-                    self.brace_list_or_val() 
-                self.state = 83
+            la_ = self._interp.adaptivePredict(self._input,5,self._ctx)
+            if la_ == 1:
+                self.enterOuterAlt(localctx, 1)
+                self.state = 77
+                self.match(DXBCParser.DECL_NAME)
+                self.state = 81
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,3,self._ctx)
+                while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
+                    if _alt==1:
+                        self.state = 78
+                        self.brace_list_or_val() 
+                    self.state = 83
+                    self._errHandler.sync(self)
+                    _alt = self._interp.adaptivePredict(self._input,3,self._ctx)
 
-            self.state = 84
-            self.value()
-            self.state = 89
-            self._errHandler.sync(self)
-            _la = self._input.LA(1)
-            while _la==DXBCParser.COMMA_SEP:
-                self.state = 85
-                self.match(DXBCParser.COMMA_SEP)
-                self.state = 86
+                self.state = 84
                 self.value()
-                self.state = 91
+                self.state = 89
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
+                while _la==DXBCParser.COMMA_SEP:
+                    self.state = 85
+                    self.match(DXBCParser.COMMA_SEP)
+                    self.state = 86
+                    self.value()
+                    self.state = 91
+                    self._errHandler.sync(self)
+                    _la = self._input.LA(1)
+
+                pass
+
+            elif la_ == 2:
+                self.enterOuterAlt(localctx, 2)
+                self.state = 92
+                self.match(DXBCParser.DECL_NAME)
+                self.state = 93
+                self.brace_list()
+                pass
+
 
         except RecognitionException as re:
             localctx.exception = re
@@ -583,20 +605,20 @@ class DXBCParser ( Parser ):
         self.enterRule(localctx, 10, self.RULE_instructions)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 92
+            self.state = 96
             self.instruction()
-            self.state = 97
+            self.state = 101
             self._errHandler.sync(self)
-            _alt = self._interp.adaptivePredict(self._input,5,self._ctx)
+            _alt = self._interp.adaptivePredict(self._input,6,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
-                    self.state = 93
+                    self.state = 97
                     self.match(DXBCParser.NEWLINE)
-                    self.state = 94
+                    self.state = 98
                     self.instruction() 
-                self.state = 99
+                self.state = 103
                 self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input,5,self._ctx)
+                _alt = self._interp.adaptivePredict(self._input,6,self._ctx)
 
         except RecognitionException as re:
             localctx.exception = re
@@ -662,38 +684,38 @@ class DXBCParser ( Parser ):
         self.enterRule(localctx, 12, self.RULE_instruction)
         self._la = 0 # Token type
         try:
-            self.state = 114
+            self.state = 118
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,7,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,8,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 100
+                self.state = 104
                 self.match(DXBCParser.INT_IMMEDIATE_SCALAR)
-                self.state = 101
+                self.state = 105
                 self.match(DXBCParser.INSTRUCTION_LINE_SEP)
-                self.state = 102
+                self.state = 106
                 self.instruction_name()
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 103
+                self.state = 107
                 self.match(DXBCParser.INT_IMMEDIATE_SCALAR)
-                self.state = 104
+                self.state = 108
                 self.match(DXBCParser.INSTRUCTION_LINE_SEP)
-                self.state = 105
+                self.state = 109
                 self.instruction_name()
-                self.state = 106
+                self.state = 110
                 self.value()
-                self.state = 111
+                self.state = 115
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 while _la==DXBCParser.COMMA_SEP:
-                    self.state = 107
+                    self.state = 111
                     self.match(DXBCParser.COMMA_SEP)
-                    self.state = 108
+                    self.state = 112
                     self.value()
-                    self.state = 113
+                    self.state = 117
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
@@ -748,7 +770,7 @@ class DXBCParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 116
+            self.state = 120
             _la = self._input.LA(1)
             if not(_la==DXBCParser.SAMPLE_INDEXABLE_TOKEN or _la==DXBCParser.ID):
                 self._errHandler.recoverInline(self)
@@ -811,11 +833,11 @@ class DXBCParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 119
+            self.state = 123
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==DXBCParser.PLUS_OP or _la==DXBCParser.SUB_OP:
-                self.state = 118
+                self.state = 122
                 _la = self._input.LA(1)
                 if not(_la==DXBCParser.PLUS_OP or _la==DXBCParser.SUB_OP):
                     self._errHandler.recoverInline(self)
@@ -824,16 +846,16 @@ class DXBCParser ( Parser ):
                     self.consume()
 
 
-            self.state = 123
+            self.state = 127
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,9,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,10,self._ctx)
             if la_ == 1:
-                self.state = 121
+                self.state = 125
                 self.vector_value()
                 pass
 
             elif la_ == 2:
-                self.state = 122
+                self.state = 126
                 self.scalar_value()
                 pass
 
@@ -890,24 +912,24 @@ class DXBCParser ( Parser ):
         localctx = DXBCParser.Scalar_valueContext(self, self._ctx, self.state)
         self.enterRule(localctx, 18, self.RULE_scalar_value)
         try:
-            self.state = 128
+            self.state = 132
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,10,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,11,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 125
+                self.state = 129
                 self.immediate_scalar()
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 126
+                self.state = 130
                 self.single_vector_component()
                 pass
 
             elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 127
+                self.state = 131
                 self.scalar_variable()
                 pass
 
@@ -960,17 +982,17 @@ class DXBCParser ( Parser ):
         localctx = DXBCParser.Vector_valueContext(self, self._ctx, self.state)
         self.enterRule(localctx, 20, self.RULE_vector_value)
         try:
-            self.state = 132
+            self.state = 136
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [DXBCParser.VECTOR_OPEN]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 130
+                self.state = 134
                 self.immediate_vector()
                 pass
             elif token in [DXBCParser.ID]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 131
+                self.state = 135
                 self.swizzled_vector_variable()
                 pass
             else:
@@ -1028,11 +1050,11 @@ class DXBCParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 135
+            self.state = 139
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==DXBCParser.PLUS_OP or _la==DXBCParser.SUB_OP:
-                self.state = 134
+                self.state = 138
                 _la = self._input.LA(1)
                 if not(_la==DXBCParser.PLUS_OP or _la==DXBCParser.SUB_OP):
                     self._errHandler.recoverInline(self)
@@ -1041,7 +1063,7 @@ class DXBCParser ( Parser ):
                     self.consume()
 
 
-            self.state = 137
+            self.state = 141
             self.scalar_value()
         except RecognitionException as re:
             localctx.exception = re
@@ -1094,7 +1116,7 @@ class DXBCParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 139
+            self.state = 143
             _la = self._input.LA(1)
             if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << DXBCParser.HEX_IMMEDIATE_SCALAR) | (1 << DXBCParser.INT_IMMEDIATE_SCALAR) | (1 << DXBCParser.FLOAT_IMMEDIATE_SCALAR))) != 0)):
                 self._errHandler.recoverInline(self)
@@ -1148,9 +1170,9 @@ class DXBCParser ( Parser ):
         self.enterRule(localctx, 26, self.RULE_single_component)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 141
+            self.state = 145
             self.match(DXBCParser.DOT)
-            self.state = 142
+            self.state = 146
             self.match(DXBCParser.COMPONENT)
         except RecognitionException as re:
             localctx.exception = re
@@ -1199,9 +1221,9 @@ class DXBCParser ( Parser ):
         self.enterRule(localctx, 28, self.RULE_swizzle_components)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 144
+            self.state = 148
             self.match(DXBCParser.DOT)
-            self.state = 145
+            self.state = 149
             self.match(DXBCParser.COMPONENT_STR)
         except RecognitionException as re:
             localctx.exception = re
@@ -1252,9 +1274,9 @@ class DXBCParser ( Parser ):
         self.enterRule(localctx, 30, self.RULE_single_vector_component)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 147
+            self.state = 151
             self.variable_name()
-            self.state = 148
+            self.state = 152
             self.single_component()
         except RecognitionException as re:
             localctx.exception = re
@@ -1301,7 +1323,7 @@ class DXBCParser ( Parser ):
         self.enterRule(localctx, 32, self.RULE_scalar_variable)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 150
+            self.state = 154
             self.variable_name()
         except RecognitionException as re:
             localctx.exception = re
@@ -1364,23 +1386,23 @@ class DXBCParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 152
+            self.state = 156
             self.match(DXBCParser.VECTOR_OPEN)
-            self.state = 153
+            self.state = 157
             self.component_value()
-            self.state = 158
+            self.state = 162
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==DXBCParser.COMMA_SEP:
-                self.state = 154
+                self.state = 158
                 self.match(DXBCParser.COMMA_SEP)
-                self.state = 155
+                self.state = 159
                 self.component_value()
-                self.state = 160
+                self.state = 164
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 161
+            self.state = 165
             self.match(DXBCParser.VECTOR_CLOSE)
         except RecognitionException as re:
             localctx.exception = re
@@ -1431,9 +1453,9 @@ class DXBCParser ( Parser ):
         self.enterRule(localctx, 36, self.RULE_swizzled_vector_variable)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 163
+            self.state = 167
             self.variable_name()
-            self.state = 164
+            self.state = 168
             self.swizzle_components()
         except RecognitionException as re:
             localctx.exception = re
@@ -1484,13 +1506,13 @@ class DXBCParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 166
+            self.state = 170
             self.match(DXBCParser.ID)
-            self.state = 168
+            self.state = 172
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==DXBCParser.ARRAY_IDX_OPEN:
-                self.state = 167
+                self.state = 171
                 self.array_index()
 
 
@@ -1549,21 +1571,21 @@ class DXBCParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 170
+            self.state = 174
             self.match(DXBCParser.ARRAY_IDX_OPEN)
-            self.state = 172 
+            self.state = 176 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
-                self.state = 171
+                self.state = 175
                 self.component_value()
-                self.state = 174 
+                self.state = 178 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << DXBCParser.PLUS_OP) | (1 << DXBCParser.SUB_OP) | (1 << DXBCParser.ID) | (1 << DXBCParser.HEX_IMMEDIATE_SCALAR) | (1 << DXBCParser.INT_IMMEDIATE_SCALAR) | (1 << DXBCParser.FLOAT_IMMEDIATE_SCALAR))) != 0)):
                     break
 
-            self.state = 176
+            self.state = 180
             self.match(DXBCParser.ARRAY_IDX_CLOSE)
         except RecognitionException as re:
             localctx.exception = re
@@ -1613,17 +1635,17 @@ class DXBCParser ( Parser ):
         localctx = DXBCParser.Brace_list_or_valContext(self, self._ctx, self.state)
         self.enterRule(localctx, 42, self.RULE_brace_list_or_val)
         try:
-            self.state = 180
+            self.state = 184
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [DXBCParser.BRACE_LIST_START]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 178
+                self.state = 182
                 self.brace_list()
                 pass
             elif token in [DXBCParser.PLUS_OP, DXBCParser.SUB_OP, DXBCParser.ID, DXBCParser.VECTOR_OPEN, DXBCParser.HEX_IMMEDIATE_SCALAR, DXBCParser.INT_IMMEDIATE_SCALAR, DXBCParser.FLOAT_IMMEDIATE_SCALAR]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 179
+                self.state = 183
                 self.value()
                 pass
             else:
@@ -1696,30 +1718,30 @@ class DXBCParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 182
+            self.state = 186
             self.match(DXBCParser.BRACE_LIST_START)
-            self.state = 183
+            self.state = 187
             self.brace_list_or_val()
-            self.state = 186 
+            self.state = 190 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
-                self.state = 184
+                self.state = 188
                 _la = self._input.LA(1)
                 if not(_la==DXBCParser.COMMA_SEP_NEWLINE or _la==DXBCParser.COMMA_SEP):
                     self._errHandler.recoverInline(self)
                 else:
                     self._errHandler.reportMatch(self)
                     self.consume()
-                self.state = 185
+                self.state = 189
                 self.brace_list_or_val()
-                self.state = 188 
+                self.state = 192 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if not (_la==DXBCParser.COMMA_SEP_NEWLINE or _la==DXBCParser.COMMA_SEP):
                     break
 
-            self.state = 190
+            self.state = 194
             self.match(DXBCParser.BRACE_LIST_END)
         except RecognitionException as re:
             localctx.exception = re

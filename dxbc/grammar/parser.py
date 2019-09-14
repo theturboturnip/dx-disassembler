@@ -96,9 +96,12 @@ def parse_vector(vector_ctx: DXBCParser.Vector_valueContext, negated:bool) -> Va
     return VectorValue(scalar_components, negated)
 
 def parse_brace_list(value_ctx: DXBCParser.Brace_list_or_valContext) -> BraceList:
-    if not value_ctx.brace_list():
-        raise DXBCError(f"Expected brace_list, got {type(value_ctx)}")
-    return BraceList(value_ctx.brace_list().getText())
+    if not isinstance(value_ctx, DXBCParser.Brace_listContext):
+        if not value_ctx.brace_list():
+            raise DXBCError(f"Expected brace_list, got {type(value_ctx)}")
+        value_ctx = value_ctx.brace_list()
+
+    return BraceList(value_ctx.getText())
 
 def parse_value(value_ctx: Union[DXBCParser.Brace_list_or_valContext, DXBCParser.ValueContext]) -> Value:
     if isinstance(value_ctx, DXBCParser.Brace_list_or_valContext):
@@ -169,7 +172,7 @@ class DisassemblyParser(DXBCListener):
         #print(f"simple {DeclName(decl_name).name} {[x.getText() for x in ctx.brace_list_or_val()]} {[x.getText() for x in ctx.value()]}")
 
         if decl_name is DeclName.ImmediateBufferToken:
-            self.declarations.icb_buffers.append(parse_brace_list(ctx.brace_list_or_val()[0]))
+            self.declarations.icb_buffers.append(parse_brace_list(ctx.brace_list()))
         else:
             config_list = [parse_value(b_or_v) for b_or_v in ctx.brace_list_or_val()]
             value_list = [parse_value(value_ctx) for value_ctx in ctx.value()]
