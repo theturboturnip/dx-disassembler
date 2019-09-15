@@ -1,6 +1,6 @@
 import sys
 from copy import copy
-from typing import Type
+from typing import Type, List
 
 from dxbc.Errors import DXBCValueError, DXBCError
 
@@ -22,7 +22,7 @@ def reraise(e, extra):
         raise type(e)(extra.format(str(e)))
 
 
-def FirstPossibleOf(types: [Type], potential_errors: [Type[Exception]] = None):
+def FirstPossibleOf(types: List[Type], potential_errors: List[Type[Exception]] = None):
     """
     Returns a type that when created will return a value of the first type
     which doesn't throw one of the potential_errors during creation.
