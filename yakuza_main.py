@@ -22,14 +22,22 @@ def decompile_yakuza_shader(y: YkShaderFile):
     flags = (1 << 11) | (1 << 21) | (1 << 15)
     compile_bytes = compile_shader(program.get_disassembled_shader(), "DISASSEMBLED_SHADER", flags)
 
+    print(y.get_pixel_shader_data() != compile_bytes)
+    print(len(y.get_pixel_shader_data()))
+    print(len(compile_bytes))
+
     program2 = program_from_bytes(compile_bytes)
     print(program2.get_disassembled_shader())
     compile_bytes2 = compile_shader(program2.get_disassembled_shader(), "DISASSEMBLED_SHADER2", flags)
 
 
 f = import_yakuza_shader_file(WindowsPath("./custom_data/sd_c1dzt[hair][vcol][ao].fxo"))
-print(f)
-decompile_yakuza_shader(f)
+program = program_from_bytes(f.get_pixel_shader_data())
+flags = (1 << 11) | (1 << 21) | (1 << 15)
+compile_bytes = compile_shader(program.get_disassembled_shader(), "DISASSEMBLED_SHADER", flags)
+f.update_pixel_shader_data(compile_bytes)
+f.write_to_path(WindowsPath("./custom_data/sd_c1dzt[hair][vcol][ao].fxo.new"))
+
 
 f2 = import_yakuza_shader_file(WindowsPath("./custom_data/ps_lighting_from_depth_ssss.pso"))
 print(f2)

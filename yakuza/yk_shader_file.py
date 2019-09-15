@@ -20,7 +20,6 @@ class YkError(Exception):
 
 HEADER_SIZE = 0x80
 
-
 class YkShaderFile(abc.ABC):
     DATA_LENGTH_OFFSETS_FROM_HEADER: List[int]
     expected_header: str
@@ -37,11 +36,14 @@ class YkShaderFile(abc.ABC):
 
         data_lengths = []
         for length_offset in self.DATA_LENGTH_OFFSETS_FROM_HEADER:
-            data_lengths.append(self.get_int(length_offset, 2))
+            data_lengths.append(self.get_int(length_offset, 4))
         if not all(l == data_lengths[0] for l in data_lengths):
             raise YkError(f"Expected data lengths to match, got {[hex(x) for x in data_lengths]}")
         self.data_length = data_lengths[0]
 
+        self.check_length()
+
+    def check_length(self):
         expected_end = self.offset + HEADER_SIZE + self.data_length
         if expected_end > len(self.byte_data):
             raise YkError(f"offset + data_length + HEADER_SIZE is longer than the actual data! "
@@ -80,8 +82,21 @@ class YkShaderFile(abc.ABC):
         else:
             self.byte_data[key] = value
 
+    def set_length(self, new_length: int):
+        self.data_length = new_length
+        for length_offset in self.DATA_LENGTH_OFFSETS_FROM_HEADER:
+            self.set_int(length_offset, 4, new_length)
+        self.check_length()
+
     def get_pixel_shader_data(self) -> bytes:
         raise NotImplementedError()
+
+    def update_pixel_shader_data(self, new_ps_data: bytes):
+        raise NotImplementedError()
+
+    def write_to_path(self, path: WindowsPath):
+        with path.open("wb") as f:
+            f.write(self[0:HEADER_SIZE+self.data_length])
 
 
 class YkPixelShaderFile(YkShaderFile):
@@ -97,6 +112,10 @@ class YkPixelShaderFile(YkShaderFile):
             raise YkError(f"Unexpected pixel shader data length, expected {self.data_length:x} but got {len(data):x}")
         return data
 
+    def update_pixel_shader_data(self, new_ps_data: bytes):
+        self[HEADER_SIZE:HEADER_SIZE + self.data_length] = new_ps_data
+        self.set_length(len(new_ps_data))
+
 class YkEffectShaderFile(YkShaderFile):
     expected_header = "GSFX"
     DATA_LENGTH_OFFSETS_FROM_HEADER = [0x0C]
@@ -107,8 +126,8 @@ class YkEffectShaderFile(YkShaderFile):
 
     def __init__(self, byte_data: bytearray, offset: int = 0):
         super().__init__(byte_data, offset)
-        pixel_shader_address = self.get_int(self.PIXEL_SHADER_ADDRESS_OFFSET, 2)
-        pixel_shader_length = self.get_int(self.PIXEL_SHADER_LENGTH_OFFSET, 2)
+        pixel_shader_address = self.get_int(self.PIXEL_SHADER_ADDRESS_OFFSET, 4)
+        pixel_shader_length = self.get_int(self.PIXEL_SHADER_LENGTH_OFFSET, 4)
 
         try:
             self.pixel_shader_file = YkPixelShaderFile(self.byte_data, self.offset + pixel_shader_address)
@@ -122,3 +141,9 @@ class YkEffectShaderFile(YkShaderFile):
 
     def get_pixel_shader_data(self) -> bytes:
         return self.pixel_shader_file.get_pixel_shader_data()
+
+    def update_pixel_shader_data(self, new_ps_data: bytes):
+        delta_length = len(new_ps_data) - self.pixel_shader_file.data_length
+        self.pixel_shader_file.update_pixel_shader_data(new_ps_data)
+        self.set_length(self.data_length + delta_length)
+        self.set_int(self.PIXEL_SHADER_LENGTH_OFFSET, 4, self.pixel_shader_file.data_length + HEADER_SIZE)
