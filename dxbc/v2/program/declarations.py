@@ -22,10 +22,14 @@ class DeclName(IntEnum):
 Declaration = typing.NamedTuple("declaration", [("config_list", List[Value]),  ("value_list", List[Value])])
 
 class DeclStorage:
-    normal_storage: Dict[DeclName, List[Declaration]] = {
-        d: [] for d in DeclName if d is not DeclName.ImmediateBufferToken
-    }
-    icb_buffers: List[BraceList] = []
+    normal_storage: Dict[DeclName, List[Declaration]]
+    icb_buffers: List[BraceList]
+
+    def __init__(self):
+        self.normal_storage = {
+            d: [] for d in DeclName if d is not DeclName.ImmediateBufferToken
+        }
+        self.icb_buffers = []
 
     def __str__(self):
         str_dict = {DeclName.ImmediateBufferToken: self.icb_buffers}

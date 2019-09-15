@@ -14,10 +14,12 @@ def import_yakuza_shader_file(path: WindowsPath) -> 'YkShaderFile':
 
     return FirstPossibleOf([YkPixelShaderFile, YkEffectShaderFile], [YkError])(byte_data)
 
+
 class YkError(Exception):
     pass
 
 HEADER_SIZE = 0x80
+
 
 class YkShaderFile(abc.ABC):
     DATA_LENGTH_OFFSETS_FROM_HEADER: List[int]
@@ -40,9 +42,10 @@ class YkShaderFile(abc.ABC):
             raise YkError(f"Expected data lengths to match, got {[hex(x) for x in data_lengths]}")
         self.data_length = data_lengths[0]
 
-        if self.offset + self.data_length > len(self.byte_data):
-            raise YkError(f"offset + data_length is longer than the actual data! "
-                          f"expected end: {self.offset + self.data_length}, data length: {len(self.byte_data)}")
+        expected_end = self.offset + HEADER_SIZE + self.data_length
+        if expected_end > len(self.byte_data):
+            raise YkError(f"offset + data_length + HEADER_SIZE is longer than the actual data! "
+                          f"expected end: {expected_end}, data length: {len(self.byte_data)}")
 
     def get_int(self, address: int, byte_length: int):
         return int.from_bytes(self[address:address + byte_length], "little")
@@ -80,12 +83,19 @@ class YkShaderFile(abc.ABC):
     def get_pixel_shader_data(self) -> bytes:
         raise NotImplementedError()
 
+
 class YkPixelShaderFile(YkShaderFile):
     expected_header = "GSPS"
     DATA_LENGTH_OFFSETS_FROM_HEADER = [0x0C, 0x1C]
 
     def __init__(self, byte_data: bytearray, offset: int = 0):
         super().__init__(byte_data, offset)
+
+    def get_pixel_shader_data(self) -> bytes:
+        data = bytes(self[HEADER_SIZE:HEADER_SIZE + self.data_length])
+        if len(data) != self.data_length:
+            raise YkError(f"Unexpected pixel shader data length, expected {self.data_length:x} but got {len(data):x}")
+        return data
 
 class YkEffectShaderFile(YkShaderFile):
     expected_header = "GSFX"
@@ -109,3 +119,6 @@ class YkEffectShaderFile(YkShaderFile):
         if actual_data_length != pixel_shader_length:
             raise YkError(f"Expected pixel shader data to be of "
                           f"length {pixel_shader_length:x}, header says {actual_data_length:x}")
+
+    def get_pixel_shader_data(self) -> bytes:
+        return self.pixel_shader_file.get_pixel_shader_data()

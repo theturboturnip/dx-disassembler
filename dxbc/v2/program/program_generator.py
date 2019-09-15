@@ -3,9 +3,10 @@ from itertools import chain
 from typing import Dict, List, Tuple, Sequence
 
 from dxbc.grammar.table_parser import Semantic
+from dxbc.v2.program.semantics import SemanticSet
 from dxbc.v2.types import ScalarType
 from dxbc.v2.program.actions.action import Action
-from dxbc.v2.program.decl_name import DeclName, DeclStorage
+from dxbc.v2.program.declarations import DeclName, DeclStorage
 from dxbc.v2.program.functions import Function, TruncateToOutput, function_map
 from dxbc.v2.program.program import Program
 from dxbc.v2.program.state import ExecutionState, get_scalar_ids, DXBCError, ScalarID, \
@@ -101,7 +102,7 @@ class ProgramGenerator:
         return Program(decl_data, initial_state, actions, input_semantics, output_semantics)
 
     @staticmethod
-    def generate_initial_state(decl_data: DeclStorage, input_semantics: List[Semantic], output_semantics: List[Semantic]) -> Tuple[ExecutionState, List[str], str]:
+    def generate_initial_state(decl_data: DeclStorage, input_semantics: SemanticSet, output_semantics: SemanticSet) -> Tuple[ExecutionState, List[str], str]:
         # TODO Use semantics to determine input types/widths
 
         initial_types: Dict[VarNameBase, ScalarType] = {}
@@ -143,11 +144,12 @@ class ProgramGenerator:
                 scalar_variable_names.append(base_name)
 
         # TODO This is terrible
-        for i, decl in enumerate(sorted(decl_data[DeclName.TypedPSInput] + decl_data[DeclName.UntypedInput], key=lambda x: x.value_list[0].get_var_name().name)):
+        for decl in sorted(decl_data[DeclName.TypedPSInput] + decl_data[DeclName.UntypedInput], key=lambda x: x.value_list[0].get_var_name().name):
             base_name = decl.value_list[0].get_var_name()
-            component_count = input_semantics[i].length
+            semantic = input_semantics.match_declaration(decl)
+            component_count = semantic.length
 
-            initial_types[base_name] = input_semantics[i].scalar_type
+            initial_types[base_name] = semantic.scalar_type
             # This is to counter the "VCoverageMask.x" problem where vCoverageMask is a scalar but can be accessed by .x
             if "Mask" in base_name.name:
                 component_count = 4
@@ -156,12 +158,12 @@ class ProgramGenerator:
             else:
                 scalar_variable_names.append(base_name)
 
-        for i, decl in enumerate(sorted(decl_data[DeclName.Output],
-                                        key=lambda x: x.value_list[0].get_var_name().name)):
+        for decl in sorted(decl_data[DeclName.Output], key=lambda x: x.value_list[0].get_var_name().name):
             base_name = decl.value_list[0].get_var_name()
-            component_count = output_semantics[i].length
+            semantic = output_semantics.match_declaration(decl)
+            component_count = semantic.length
 
-            initial_types[base_name] = output_semantics[i].scalar_type
+            initial_types[base_name] = semantic.scalar_type
             # This is to counter the "VCoverageMask.x" problem where vCoverageMask is a scalar but can be accessed by .x
             if "Mask" in base_name.name:
                 component_count = 4

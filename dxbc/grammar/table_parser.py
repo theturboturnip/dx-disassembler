@@ -8,14 +8,13 @@ from dxbc.Errors import DXBCError
 from dxbc.grammar.antlr_files.table.DXBCTableLexer import DXBCTableLexer
 from dxbc.grammar.antlr_files.table.DXBCTableListener import DXBCTableListener
 from dxbc.grammar.antlr_files.table.DXBCTableParser import DXBCTableParser
+from dxbc.v2.program.semantics import Semantic, SemanticSet
 from dxbc.v2.types import ScalarType
 
 numbered_semantics = {"TEXCOORD", "SV_TARGET"}
 
-Semantic = typing.NamedTuple("Semantic", [("name", str), ("scalar_type", ScalarType), ("length", int)])
-
 class SemanticTableParser(DXBCTableListener):
-    semantic_strs: List[Semantic]
+    semantic_strs: SemanticSet
     table: List[List[str]]
 
     def __init__(self, table_data: str):
@@ -28,7 +27,7 @@ class SemanticTableParser(DXBCTableListener):
         walker = ParseTreeWalker()
         walker.walk(self, tree)
 
-        self.semantic_strs = []
+        self.semantic_strs = SemanticSet()
 
         if self.table[0][:6] != ["Name", "Index", "Mask", "Register", "SysValue", "Format"]:
             raise DXBCError("First columns were not Name and Index as expected")
@@ -42,7 +41,7 @@ class SemanticTableParser(DXBCTableListener):
                 index = int(row[1])
                 full_name = f"{name}{index}"
 
-            self.semantic_strs.append(Semantic(full_name, scalar_type, vector_length))
+            self.semantic_strs.append(Semantic(semantic_name=full_name, register=row[3], scalar_type=scalar_type, length=vector_length))
 
     def enterTable(self, ctx:DXBCTableParser.TableContext):
         self.table = [self.table_row_data(row) for row in ctx.table_row()]

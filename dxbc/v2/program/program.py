@@ -2,9 +2,10 @@ from typing import Optional, Union, List
 
 from dxbc.grammar.table_parser import Semantic
 from dxbc.v2.definitions import VectorComponent
+from dxbc.v2.program.semantics import SemanticSet
 from dxbc.v2.types import ScalarType
 from dxbc.v2.program.actions.action import Action
-from dxbc.v2.program.decl_name import DeclStorage, DeclName, Declaration
+from dxbc.v2.program.declarations import DeclStorage, DeclName, Declaration
 from dxbc.v2.program.state import ExecutionState
 from dxbc.v2.program.variables import ScalarID
 from dxbc.v2.values import *
@@ -16,8 +17,8 @@ specifiers = {
 
 class Program:
     declarations: DeclStorage
-    input_semantics: List[Semantic]
-    output_semantics: List[Semantic]
+    input_semantics: SemanticSet
+    output_semantics: SemanticSet
 
     initial_state: ExecutionState
     actions: List[Action]
@@ -26,7 +27,7 @@ class Program:
 
     icb_contents: str
 
-    def __init__(self, declarations: DeclStorage, initial_state: ExecutionState, actions: List[Action], input_semantics: List[Semantic], output_semantics: List[Semantic]):
+    def __init__(self, declarations: DeclStorage, initial_state: ExecutionState, actions: List[Action], input_semantics: SemanticSet, output_semantics: SemanticSet):
         self.declarations = declarations
         self.initial_state = initial_state
         self.actions = actions
@@ -121,11 +122,11 @@ inline uint BITRANGE_INSERT(uint width, uint offset, uint src, uint dest)
     return ((src << offset) & mask) | (dest & ~mask);
 }"""
 
-    def create_struct_def(self, struct_name: str, decls: List[Declaration], semantics: List[Semantic], as_output: bool = False)-> str:
+    def create_struct_def(self, struct_name: str, decls: List[Declaration], semantics: SemanticSet, as_output: bool = False)-> str:
         decls = sorted(decls, key=lambda x: x.value_list[0].get_var_name().name)
 
         member_strs: List[str] = []
-        for i, decl in enumerate(decls):
+        for decl in decls:
             member_prefix = ""
             if len(decl.config_list):
                 member_prefix = " ".join(c.scalar_name.name for c in decl.config_list) + " "
@@ -133,10 +134,12 @@ inline uint BITRANGE_INSERT(uint width, uint offset, uint src, uint dest)
             #    member_prefix = "linear centroid "
             member_vec: Union[SwizzledVectorValue, SingleVectorComponent, ScalarVariable] = decl.value_list[0]
             member_name = member_vec.get_var_name()
-            output_decl = f": {semantics[i].name}"
 
-            type_str = get_type_string(semantics[i].scalar_type,
-                                       semantics[i].length)
+            semantic = semantics.match_declaration(decl)
+            output_decl = f": {semantic.semantic_name}"
+
+            type_str = get_type_string(semantic.scalar_type,
+                                       semantic.length)
             member_strs.append(
                 f"{member_prefix}{type_str} {member_name}{output_decl};"
             )

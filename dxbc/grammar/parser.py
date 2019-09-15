@@ -8,7 +8,7 @@ from dxbc.grammar.antlr_files.table.DXBCTableListener import DXBCTableListener
 from dxbc.grammar.table_parser import SemanticTableParser
 from dxbc.v2.definitions import VectorComponent
 from dxbc.v2.types import ScalarType
-from dxbc.v2.program.decl_name import DeclName, DeclStorage, Declaration
+from dxbc.v2.program.declarations import DeclName, DeclStorage, Declaration
 from dxbc.v2.values import *
 from dxbc.v2.values.brace_list import BraceList
 from .antlr_files.DXBCListener import DXBCListener
