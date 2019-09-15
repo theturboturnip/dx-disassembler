@@ -143,8 +143,7 @@ class ProgramGenerator:
             else:
                 scalar_variable_names.append(base_name)
 
-        # TODO This is terrible
-        for decl in sorted(decl_data[DeclName.TypedPSInput] + decl_data[DeclName.UntypedInput], key=lambda x: x.value_list[0].get_var_name().name):
+        for decl in decl_data[DeclName.TypedPSInput] + decl_data[DeclName.UntypedInput]:
             base_name = decl.value_list[0].get_var_name()
             semantic = input_semantics.match_declaration(decl)
             component_count = semantic.length
@@ -158,7 +157,7 @@ class ProgramGenerator:
             else:
                 scalar_variable_names.append(base_name)
 
-        for decl in sorted(decl_data[DeclName.Output], key=lambda x: x.value_list[0].get_var_name().name):
+        for decl in decl_data[DeclName.Output]:
             base_name = decl.value_list[0].get_var_name()
             semantic = output_semantics.match_declaration(decl)
             component_count = semantic.length

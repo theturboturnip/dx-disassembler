@@ -24,6 +24,8 @@ def decompile_yakuza_shader(y: YkShaderFile):
 
     program2 = program_from_bytes(compile_bytes)
     print(program2.get_disassembled_shader())
+    compile_bytes2 = compile_shader(program2.get_disassembled_shader(), "DISASSEMBLED_SHADER2", flags)
+
 
 f = import_yakuza_shader_file(WindowsPath("./custom_data/sd_c1dzt[hair][vcol][ao].fxo"))
 print(f)

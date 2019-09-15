@@ -123,8 +123,6 @@ inline uint BITRANGE_INSERT(uint width, uint offset, uint src, uint dest)
 }"""
 
     def create_struct_def(self, struct_name: str, decls: List[Declaration], semantics: SemanticSet, as_output: bool = False)-> str:
-        decls = sorted(decls, key=lambda x: x.value_list[0].get_var_name().name)
-
         member_strs: List[str] = []
         for decl in decls:
             member_prefix = ""
