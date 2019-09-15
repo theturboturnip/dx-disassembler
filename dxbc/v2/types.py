@@ -20,6 +20,13 @@ class ScalarType(Enum):
             ScalarType.Untyped: "???"
         }[self]
 
+    @staticmethod
+    def from_name(name: str) -> 'ScalarType':
+        return {
+            "float": ScalarType.Float,
+            "uint": ScalarType.Uint,
+        }[name]
+
     def __str__(self):
         return self.name()
 

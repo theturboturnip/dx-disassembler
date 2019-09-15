@@ -35,7 +35,8 @@ def compile_shader(src_shader: str, file_name: str, flags: int = 0, entry_point:
             error_bytes = blob_to_bytes(error_data_blob)
             error_str = str(error_bytes, "utf-8")
             error_data_blob.contents.vtable.contents.Release(error_data_blob)
-            raise DXCallError(error_str)
+
+            raise DXCallError(f"Error in contents:\n{src_shader}\n{error_str}")
     shader_data_bytes = blob_to_bytes(shader_data_blob)
     shader_data_blob.contents.vtable.contents.Release(shader_data_blob)
     return shader_data_bytes

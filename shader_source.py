@@ -68,7 +68,7 @@ ps_instruction_str = """
 // TEXCOORD                 3   xyzw        2     NONE   float   xyz 
 // TEXCOORD                 4   xyzw        3     NONE   float   xyzw
 // SV_POSITION              0   xyzw        4      POS   float       
-// SV_COVERAGE              0  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+// SV_COVERAGE              0    N/A    vCoverageMask COVERAGE    uint    YES
 //
 //
 // Output signature:
@@ -98,10 +98,10 @@ ps_5_0
       dcl_resource_texture2d (float,float,float,float) t0
       dcl_resource_texture2d (float,float,float,float) t1
       dcl_resource_texture2d (float,float,float,float) t2
-      dcl_input_ps linearCentroid v0.xy
-      dcl_input_ps linearCentroid v1.w
-      dcl_input_ps linearCentroid v2.xyz
-      dcl_input_ps linearCentroid v3.xyzw
+      dcl_input_ps linear centroid v0.xy
+      dcl_input_ps linear centroid v1.w
+      dcl_input_ps linear centroid v2.xyz
+      dcl_input_ps linear centroid v3.xyzw
       dcl_input_ps_siv v4.xy, position
       dcl_input vCoverageMask
       dcl_output o0.xyzw

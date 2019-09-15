@@ -62,7 +62,7 @@ class ExecutionState:
 
         if isinstance(value, ScalarValueBase):
             val_id = ScalarID(value)
-            variable_type = self.get_type(val_id, default=None)
+            variable_type = self.get_type(val_id, None)
             if not variable_type:
                 raise DXBCError(f"Variable for value {value} has no state, can't infer type")
             if variable_type == ScalarType.Untyped:

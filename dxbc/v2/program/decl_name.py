@@ -1,8 +1,10 @@
 import collections
+import typing
 from enum import IntEnum
 from typing import List, Dict, Union
 
 from dxbc.Errors import DXBCError
+from dxbc.v2.values import Value
 from dxbc.v2.values.brace_list import BraceList
 
 
@@ -17,7 +19,7 @@ class DeclName(IntEnum):
     Output = 7,
     RegisterCount = 8
 
-Declaration = collections.namedtuple("declaration", "config_list value_list")
+Declaration = typing.NamedTuple("declaration", [("config_list", List[Value]),  ("value_list", List[Value])])
 
 class DeclStorage:
     normal_storage: Dict[DeclName, List[Declaration]] = {
