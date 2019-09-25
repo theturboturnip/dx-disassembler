@@ -25,34 +25,39 @@ def windows_path_arg(input: str):
     return path
 
 def main():
-    parser = argparse.ArgumentParser(description="Extract the pixel shader HLSL from a Yakuza .pso or .fxo file")
-    parser.add_argument("yakuza_file", help="The file to extract from.", type=windows_path_arg)
-    parser.add_argument("-o", help="The file to output. Defaults to \"ORIGINAL_FILE.pxo.hlsl\"")
-    parser.add_argument("-i", help="Ignore compilation errors for disassembled shader", action="store_true", dest="ignore")
+    parser = argparse.ArgumentParser(description="Insert a pixel shader compiled from HLSL into a Yakuza .pso or .fxo file")
+    parser.add_argument("hlsl_file", help="The file to extract from.", type=windows_path_arg)
+    out_arg = parser.add_argument("-o", help="The file to output. If the filename is of the form \"ORIGINAL_FILE.(pso|fxo).hlsl\", defaults to \"ORIGINAL_FILE.(pso|fxo)\"")
+    parser.add_argument("--no_backup", dest="backup", action="store_false")
 
     args = parser.parse_args()
 
     if not args.o:
-        args.o = args.yakuza_file.with_suffix(args.yakuza_file.suffix + ".hlsl")
+        if (len(args.hlsl_file.suffixes) > 1 and
+                args.hlsl_file.suffixes[0].lower() in [".pso", ".fxo"] and
+                args.hlsl_file.suffix.lower() == ".hlsl"):
+            args.o = args.hlsl_file.with_suffix("")
+        else:
+            raise argparse.ArgumentError(out_arg, "-o was not specified and hlsl_file was not in the correct format to autodetect the output.")
     output_path = WindowsPath(args.o)
 
-    yk_file = import_yakuza_shader_file(args.yakuza_file)
+    yk_file = import_yakuza_shader_file(args.o)
+    backup_path: WindowsPath = args.o.with_suffix(args.o.suffix + ".original")
+    if args.backup and not backup_path.exists():
+        yk_file.write_to_path(backup_path)
 
-    shader_assembly = decompile_shader(yk_file.get_pixel_shader_data())
-    print(shader_assembly)
-    dp = DisassemblyParser(shader_assembly)
-    pg = ProgramGenerator()
-    program = pg.build_program(dp.declarations, dp.instructions, dp.input_semantics, dp.output_semantics)
+    flags = ((1 << 11)  # D3DCOMPILE_ENABLE_STRICTNESS
+             | (1 << 21)  # D3DCOMPILE_ALL_RESOURCES_BOUND
+             | (1 << 15))  # D3DCOMPILE_OPTIMIZATION_LEVEL3
 
-    try:
-        flags = (1 << 11) | (1 << 21) | (1 << 15)
-        compile_shader(program.get_disassembled_shader(), "DISASSEMBLED_SHADER", flags)
-    except DXCallError as e:
-        if not args.ignore:
-            reraise(e, "Got error when compiling disassembled shader, use -i to ignore." + "\n{}")
+    with args.hlsl_file.open("r") as f:
+        shader_src = f.read()
 
-    with output_path.open("w") as f:
-        f.write(program.get_disassembled_shader())
+    shader_assembly = compile_shader(shader_src, str(args.hlsl_file), flags)
+
+    yk_file.update_pixel_shader_data(shader_assembly)
+
+    yk_file.write_to_path(args.o)
 
 if __name__ == "__main__":
     sys.excepthook = show_exception_and_exit

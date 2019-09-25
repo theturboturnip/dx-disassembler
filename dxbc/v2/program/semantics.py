@@ -13,6 +13,10 @@ class SemanticSet:
 
     def __init__(self):
         self.semantics = {}
+        self.append(Semantic("SV_COVERAGE", "vCoverage", ScalarType.Uint, 1))
+        self.append(Semantic("SV_COVERAGE", "vCoverageMask", ScalarType.Uint, 1))
+        self.append(Semantic("SV_COVERAGE", "oMask", ScalarType.Uint, 1))
+
 
     def append(self, new_sem: Semantic):
         self.semantics[new_sem.register] = new_sem

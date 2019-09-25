@@ -27,15 +27,23 @@ class Program:
 
     icb_contents: str
 
-    def __init__(self, declarations: DeclStorage, initial_state: ExecutionState, actions: List[Action], input_semantics: SemanticSet, output_semantics: SemanticSet):
+    global_flags: List[str] = []
+
+    def __init__(self, declarations: DeclStorage, initial_state: ExecutionState, actions: List[Action], input_semantics: SemanticSet, output_semantics: SemanticSet, global_flags: List[str]):
         self.declarations = declarations
         self.initial_state = initial_state
         self.actions = actions
         self.input_semantics = input_semantics
         self.output_semantics = output_semantics
+        self.global_flags = global_flags
 
     def get_disassembled_shader(self) -> str:
-        return "\n".join([self.get_macros(), "", self.get_declaration_hlsl(), self.get_main_function_hlsl()])
+        return "\n".join([self.get_macros(), "", self.get_declaration_hlsl(), self.get_function_decorators(), self.get_main_function_hlsl()])
+
+    def get_function_decorators(self):
+        if "forceEarlyDepthStencil" in self.global_flags:
+            return "[earlydepthstencil]"
+        return ""
 
     def get_main_function_hlsl(self, line_prefix: str = "", input_struct_name: str = "INPUT", output_struct_name: str = "OUTPUT"):
         start_mapping = self.get_start_mapping(
@@ -109,7 +117,10 @@ return output;""".replace("\n", f"\n{line_prefix}")
                 vec_length = action.new_state.get_vector_length(action.remapped_out)
                 line_disassembly += f"{action.remapped_out.disassemble(vec_length)} = "
 
-            line_disassembly += f"{action.func.disassemble_call(action.remapped_in, action.new_state)};"
+            function_call = action.func.disassemble_call(action.remapped_in, action.new_state)
+            if action.modifier:
+                function_call = action.modifier.surround(function_call)
+            line_disassembly += f"{function_call};"
             function_contents += line_disassembly
         return function_contents
 
@@ -174,7 +185,7 @@ f"""cbuffer {cb_name.name} : register(b{register})
         texture_decls = self.create_variable_decls(self.declarations[DeclName.TextureToken], "Texture2D")
         sampler_decls = self.create_variable_decls(self.declarations[DeclName.SamplerToken], "SamplerState")
 
-        icb_decl = f"float4x4 icb = {self.declarations.icb_buffers[0]};" if self.declarations.icb_buffers else ""
+        icb_decl = f"const static float4x4 icb = {self.declarations.icb_buffers[0]};" if self.declarations.icb_buffers else ""
 
         cb_decls = [self.create_constant_buffer_decl(decl) for decl in self.declarations[DeclName.ConstantBufferToken]]
 

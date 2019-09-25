@@ -53,6 +53,15 @@ class DXBCListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by DXBCParser#global_flags_declaration.
+    def enterGlobal_flags_declaration(self, ctx:DXBCParser.Global_flags_declarationContext):
+        pass
+
+    # Exit a parse tree produced by DXBCParser#global_flags_declaration.
+    def exitGlobal_flags_declaration(self, ctx:DXBCParser.Global_flags_declarationContext):
+        pass
+
+
     # Enter a parse tree produced by DXBCParser#instructions.
     def enterInstructions(self, ctx:DXBCParser.InstructionsContext):
         pass

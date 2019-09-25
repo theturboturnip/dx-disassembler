@@ -3,7 +3,7 @@ from dx.decompile import decompile_shader
 from dxbc.grammar.parser import DisassemblyParser
 from dxbc.v2.program.program_generator import ProgramGenerator
 
-path = "custom_shader.pso"
+path = "./tests/custom_shader.pso"
 
 with open(path, "rb") as f:
     shader_bytes = f.read()

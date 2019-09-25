@@ -37,7 +37,7 @@ class SemanticTableParser(DXBCTableListener):
             vector_length = len(row[2]) if row[2] != "N/A" else 1
 
             full_name = name
-            if name in numbered_semantics:
+            if name.upper() in numbered_semantics:
                 index = int(row[1])
                 full_name = f"{name}{index}"
 

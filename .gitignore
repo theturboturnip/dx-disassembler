@@ -69,5 +69,8 @@ fabric.properties
 
 **/__pycache__
 venv
+venv64
+build
+dist
 
 custom_data

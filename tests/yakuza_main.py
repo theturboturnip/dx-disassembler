@@ -9,6 +9,7 @@ from dx.decompile import decompile_shader
 
 def program_from_bytes(b: bytes) -> Program:
     shader_assembly = decompile_shader(b)
+    print(shader_assembly)
     dp = DisassemblyParser(shader_assembly)
     pg = ProgramGenerator()
     return pg.build_program(dp.declarations, dp.instructions, dp.input_semantics, dp.output_semantics)

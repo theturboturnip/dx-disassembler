@@ -60,6 +60,13 @@ class TextureArgumentTruncation(NonNullArgumentTruncation):
             trim_components(input_args[2], 1),
         ]
 
+class BufferLoadArgumentTruncation(NonNullArgumentTruncation):
+    def truncate_args(self, input_args: List[GenericValue], output_arg: GenericValue):
+        return [
+            trim_components(input_args[0], 3),
+            mask_components(input_args[1], output_arg.get_output_mask())
+        ]
+
 class Function(ArgumentTruncation):
     name: str
     input_types: List[ArgumentType]
@@ -151,6 +158,23 @@ class TextureSampleFunction(Function, TextureArgumentTruncation):
         casted_input_args = self.get_input_strings(input_args, self.determine_typehole_type(input_args), current_state)
         return "{1}.Sample({2}, {0}).{3}".format(casted_input_args[0], casted_input_args[1], casted_input_args[2], input_args[1].get_component_str())
 
+class BufferLoadFunction(Function, BufferLoadArgumentTruncation):
+    def __init__(self):
+        Function.__init__(self,
+            "ld_indexable(texture2d)(float,float,float,float)",
+            [
+                ScalarType.Uint,   # UV
+                ScalarType.Untyped, # Texture
+            ],
+            ScalarType.Float
+        )
+
+    def disassemble_call(self, input_args: List[Value], current_state: ExecutionState):
+        casted_input_args = self.get_input_strings(input_args, self.determine_typehole_type(input_args), current_state)
+        return "{1}.Load({0}).{2}".format(casted_input_args[0], casted_input_args[1], input_args[1].get_component_str())
+
+
+
 #class BitfieldInsertFunction(Function):
 #    def disassemble_call(self, input_args: List[Value]):
 #        casted_input_args = self.get_input_strings(input_args, self.determine_typehole_type(input_args))
@@ -183,6 +207,7 @@ def get_closest_types(value: Value) -> GenericValueType:
 
 function_map: Dict[str, Function] = {
     "sample_indexable(texture2d)(float,float,float,float)": TextureSampleFunction(),
+    "ld_indexable(texture2d)(float,float,float,float)": BufferLoadFunction(),
 
     "discard_nz" : make_function(Function, NullTruncate, "DISCARD_NZ", [ScalarType.Untyped], None),
 
@@ -206,6 +231,7 @@ function_map: Dict[str, Function] = {
     "xor": make_logical_operation("^"),
 
     "ishl": make_arithmetic_function("<<", ScalarType.Uint),
+    "ushr": make_arithmetic_function(">>", ScalarType.Uint),
     "bfi": make_function(
         Function,
         TruncateToOutput,
@@ -242,7 +268,11 @@ function_map: Dict[str, Function] = {
     "sqrt": make_function(Function, TruncateToOutput, "sqrt", [ScalarType.Float], ScalarType.Float),
     "rsq": make_function(Function, TruncateToOutput, "1.0 / sqrt", [ScalarType.Float], ScalarType.Float),
     "f16tof32": make_function(Function, TruncateToOutput, "f16tof32", [ScalarType.Uint], ScalarType.Float),
+    "f32tof16": make_function(Function, TruncateToOutput, "f32tof16", [ScalarType.Float], ScalarType.Uint),
     "ftou": make_function(MoveFunction, TruncateToOutput, "cast_float_to_uint_NAME_UNUSED", [ScalarType.Uint], ScalarType.Uint),
+    # TODO casting like this doesn't work on vectors
+    "ftoi": make_function(Function, TruncateToOutput, "(uint)(int)", [ScalarType.Float], ScalarType.Uint),
+    "round_z": make_function(Function, TruncateToOutput, "trunc", [ScalarType.Float], ScalarType.Float),
     "dp2": make_function(Function, makeTruncateToLength(2), "dot", [ScalarType.Float, ScalarType.Float], ScalarType.Float),
     "dp3": make_function(Function, makeTruncateToLength(3), "dot", [ScalarType.Float, ScalarType.Float], ScalarType.Float),
 

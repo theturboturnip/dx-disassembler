@@ -1,3 +1,19 @@
 import collections
+import typing
 
-Action = collections.namedtuple('Action', 'func remapped_in remapped_out new_variable new_state')
+from dxbc.v2.program.functions import Function
+from dxbc.v2.program.modifiers import Modifier
+from dxbc.v2.program.state import ExecutionState
+from dxbc.v2.values import Value
+
+Action = typing.NamedTuple("Action",
+                           [
+                               ("func", Function),
+                               ("remapped_in", typing.List[Value]),
+                               ("remapped_out", typing.Optional[Value]),
+                               ("new_variable", bool),
+                               ("new_state", ExecutionState),
+                               ("modifier", typing.Optional[Modifier])
+                           ]
+                           )
+

@@ -3,6 +3,7 @@ from itertools import chain
 from typing import Dict, List, Tuple, Sequence
 
 from dxbc.grammar.table_parser import Semantic
+from dxbc.v2.program.modifiers import modifier_map
 from dxbc.v2.program.semantics import SemanticSet
 from dxbc.v2.types import ScalarType
 from dxbc.v2.program.actions.action import Action
@@ -23,8 +24,9 @@ class ProgramGenerator:
 
     def build_program(self, decl_data: DeclStorage,
                       instr_data: Sequence[Tuple[str, List[Value]]],
-                      input_semantics: List[str],
-                      output_semantics: List[str]) -> 'Program':
+                      input_semantics: SemanticSet,
+                      output_semantics: SemanticSet,
+                      global_flags: List[str]) -> 'Program':
         initial_state, self.registers, icb_contents = self.generate_initial_state(decl_data, input_semantics, output_semantics)
 
         current_tick: int = 0
@@ -38,6 +40,11 @@ class ProgramGenerator:
             current_state = current_state.copy()
 
             try:
+                split_instr_name = instr_name.split("_")
+                modifier = None
+                if split_instr_name[-1] in modifier_map:
+                    modifier = modifier_map[split_instr_name[-1]]()
+                    instr_name = "_".join(split_instr_name[:-1])
                 # Detect the function and do type-checking
                 function = function_map[instr_name]
 
@@ -88,10 +95,11 @@ class ProgramGenerator:
                     remapped_output = apply_remap(output_value, current_state)
 
                 actions.append(Action(func=function,
-                                       remapped_in=remapped_input,
-                                       remapped_out=remapped_output,
-                                       new_variable=new_variable,
-                                       new_state=current_state))
+                                      remapped_in=remapped_input,
+                                      remapped_out=remapped_output,
+                                      new_variable=new_variable,
+                                      new_state=current_state,
+                                      modifier = modifier))
 
             except DXBCError as e:
                 reraise(e, f"{{}} encountered when executing {instr_name} {arg_vals}")
@@ -99,7 +107,7 @@ class ProgramGenerator:
 
             current_tick += 1
 
-        return Program(decl_data, initial_state, actions, input_semantics, output_semantics)
+        return Program(decl_data, initial_state, actions, input_semantics, output_semantics, global_flags)
 
     @staticmethod
     def generate_initial_state(decl_data: DeclStorage, input_semantics: SemanticSet, output_semantics: SemanticSet) -> Tuple[ExecutionState, List[str], str]:
@@ -150,7 +158,7 @@ class ProgramGenerator:
 
             initial_types[base_name] = semantic.scalar_type
             # This is to counter the "VCoverageMask.x" problem where vCoverageMask is a scalar but can be accessed by .x
-            if "Mask" in base_name.name:
+            if "Mask" in base_name.name or "Coverage" in base_name.name:
                 component_count = 4
             if component_count > 1:
                 initial_vector_state[base_name] = component_count
@@ -164,7 +172,7 @@ class ProgramGenerator:
 
             initial_types[base_name] = semantic.scalar_type
             # This is to counter the "VCoverageMask.x" problem where vCoverageMask is a scalar but can be accessed by .x
-            if "Mask" in base_name.name:
+            if "Mask" in base_name.name or "Coverage" in base_name.name:
                 component_count = 4
             if component_count > 1:
                 initial_vector_state[base_name] = component_count

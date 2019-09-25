@@ -6,16 +6,21 @@ from dx.errors import DXCallError
 
 
 def decompile_shader(shader_data: bytes, flags: int = 0) -> str:
+    #print(shader_data, flags)
     disassembly_blob = ctypes.POINTER(ID3D10Blob)()
 
     flags = flags | 4  # Set ENABLE_INSTRUCTION_NUMBERING
 
-    result = d3d11_disassemble_shader(
-        shader_data, len(shader_data),
-        flags,
-        None, # No comments
-        ctypes.byref(disassembly_blob)
-    )
+    try:
+        result = d3d11_disassemble_shader(
+            shader_data, len(shader_data),
+            flags,
+            None, # No comments
+            ctypes.byref(disassembly_blob)
+        )
+    except WindowsError:
+        print(f"Got WindowsError [{result}]")
+
     if result:
         raise DXCallError(f"Disassembly failed with result {result}")
 

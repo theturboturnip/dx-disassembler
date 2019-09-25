@@ -1,8 +1,14 @@
 import ctypes
+from pathlib import WindowsPath
 
+from dx.dll_ex import WinDLLEx, LOAD_WITH_ALTERED_SEARCH_PATH
 from dx.types import ID3D10Blob
 
-d3d11compiler_lib = ctypes.WinDLL("d3dcompiler_47.dll")
+dll_path = r"C:\Users\Samuel\PycharmProjects\DXBCDisassembler\dxc-artifacts\bin\d3dcompiler_dxc_bridge.dll"
+original_dll_path = r"d3dcompiler_47.dll"
+stable_dll_path = r"C:\Program Files (x86)\Windows Kits\10\Redist\D3D\x86\d3dcompiler_47.dll"
+d3d11compiler_lib = WinDLLEx(original_dll_path)
+d3d11decompiler_lib = d3d11compiler_lib
 
 d3d11_compile_shader_proto = ctypes.WINFUNCTYPE(
     ctypes.HRESULT,
@@ -19,7 +25,7 @@ d3d11_compile_shader_proto = ctypes.WINFUNCTYPE(
     ctypes.POINTER(ctypes.POINTER(ID3D10Blob)),  # shader data blob
     ctypes.POINTER(ctypes.POINTER(ID3D10Blob)),  # error data blob
 )
-d3d11_compile_shader = d3d11_compile_shader_proto(("D3DCompile", d3d11compiler_lib))
+d3d11_compile_shader = d3d11_compile_shader_proto(("D3DCompile", d3d11decompiler_lib))
 
 d3d11_disassemble_shader_proto = ctypes.WINFUNCTYPE(
     ctypes.HRESULT,

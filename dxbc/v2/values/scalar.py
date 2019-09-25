@@ -1,5 +1,6 @@
 import copy
 import types
+from typing import Tuple
 
 from dxbc.Errors import DXBCError
 from dxbc.v2.types import ScalarType
@@ -84,10 +85,19 @@ class SingleVectorComponent(ScalarValueBase):
     def __repr__(self):
         return f"SingleVectorComponent {self.scalar_type} {self.negated} {self.vector_name}.{self.component_name.name}"
 
+    def get_output_mask(self) -> Tuple[bool, bool, bool, bool]:
+        return (self.component_name == VectorComponent.x,
+                self.component_name == VectorComponent.y,
+                self.component_name == VectorComponent.z,
+                self.component_name == VectorComponent.w)
+
     def get_var_name(self) -> VarNameBase:
         return self.vector_name
     def set_var_name(self, new_name: VarNameBase):
         self.vector_name = new_name
+
+    def get_component_str(self):
+        return self.component_name.name
 
     def disassemble(self, type_length: int = -1):
         return "{}{}.{}".format("-" if self.negated else "", self.vector_name, self.component_name.name)

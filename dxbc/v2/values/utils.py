@@ -54,8 +54,8 @@ def mask_components(vec: VectorValueBase, component_mask: Tuple[bool, bool, bool
 
 def mask_components(vec: Union[ScalarValueBase, VectorValueBase], component_mask: Tuple[bool, bool, bool, bool]) -> Value:
     if isinstance(vec, ScalarValueBase):
-        if component_mask != (True, False, False, False):
-            raise DXBCError(f"Scalars can only be masked to the first component, attempted {component_mask}")
+        if sum(component_mask) != 1:
+            raise DXBCError(f"Scalars can only be masked to one component, attempted {component_mask}")
         return vec
 
     new_components = []

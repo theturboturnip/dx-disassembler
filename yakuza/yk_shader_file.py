@@ -22,6 +22,7 @@ HEADER_SIZE = 0x80
 
 class YkShaderFile(abc.ABC):
     DATA_LENGTH_OFFSETS_FROM_HEADER: List[int]
+    LENGTH_OFFSET: int = 0
     expected_header: str
     byte_data: bytearray
     offset: int
@@ -44,10 +45,10 @@ class YkShaderFile(abc.ABC):
         self.check_length()
 
     def check_length(self):
-        expected_end = self.offset + HEADER_SIZE + self.data_length
+        expected_end = self.offset + self.LENGTH_OFFSET + self.data_length
         if expected_end > len(self.byte_data):
             raise YkError(f"offset + data_length + HEADER_SIZE is longer than the actual data! "
-                          f"expected end: {expected_end}, data length: {len(self.byte_data)}")
+                          f"offset: {self.offset:x}, expected end: {expected_end:x}, data length: {len(self.byte_data):x}")
 
     def get_int(self, address: int, byte_length: int):
         return int.from_bytes(self[address:address + byte_length], "little")
@@ -102,6 +103,7 @@ class YkShaderFile(abc.ABC):
 class YkPixelShaderFile(YkShaderFile):
     expected_header = "GSPS"
     DATA_LENGTH_OFFSETS_FROM_HEADER = [0x0C, 0x1C]
+    LENGTH_OFFSET = HEADER_SIZE
 
     def __init__(self, byte_data: bytearray, offset: int = 0):
         super().__init__(byte_data, offset)

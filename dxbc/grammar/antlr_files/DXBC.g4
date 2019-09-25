@@ -9,6 +9,7 @@ fragment ALPHANUM: ALPHA | DIGIT | '_';
 LINE_COMMENT: '//' ~('\n')* -> skip;
 
 SAMPLE_INDEXABLE_TOKEN: 'sample_indexable(texture2d)(float,float,float,float)';
+LOAD_INDEXABLE_TOKEN: 'ld_indexable(texture2d)(float,float,float,float)';
 
 BRACE_OPEN: '{';
 //BRACE_CLOSE: '}';
@@ -27,6 +28,7 @@ SHADER_TAG: 'ps_' DIGIT '_' DIGIT;
 
 COMPONENT_STR: COMPONENT+;
 
+GLOBAL_FLAGS_DECL: 'dcl_globalFlags';
 DECL_NAME: 'dcl_' ID;
 ID: ALPHA ALPHANUM+;
 DOT: '.';
@@ -49,9 +51,10 @@ shader_name: SHADER_TAG;
 
 
 declarations: declaration (NEWLINE declaration)*;
-declaration: simple_declaration;
+declaration: simple_declaration | global_flags_declaration;
 simple_declaration: DECL_NAME brace_list_or_val* value (COMMA_SEP value)*
 | DECL_NAME brace_list;
+global_flags_declaration: GLOBAL_FLAGS_DECL value ('|' value*);
 
 //value_chain: ;
 
@@ -60,7 +63,7 @@ instruction:
 	INT_IMMEDIATE_SCALAR INSTRUCTION_LINE_SEP instruction_name
 	| INT_IMMEDIATE_SCALAR INSTRUCTION_LINE_SEP instruction_name value (COMMA_SEP value)*;
 	
-instruction_name: ID | SAMPLE_INDEXABLE_TOKEN;
+instruction_name: ID | SAMPLE_INDEXABLE_TOKEN | LOAD_INDEXABLE_TOKEN;
 
 value: (PLUS_OP | SUB_OP)? (vector_value | scalar_value);
 scalar_value: immediate_scalar | single_vector_component | scalar_variable;

@@ -34,6 +34,11 @@ class DXBCVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by DXBCParser#global_flags_declaration.
+    def visitGlobal_flags_declaration(self, ctx:DXBCParser.Global_flags_declarationContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by DXBCParser#instructions.
     def visitInstructions(self, ctx:DXBCParser.InstructionsContext):
         return self.visitChildren(ctx)
